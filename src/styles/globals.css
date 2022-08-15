@@ -11,8 +11,5 @@
 
   --brown-light: #ffedcb;
   --brown-dark: #6c3c00;
-}
-
-body {
-  background-color: var(--blue-bright);
+  background-color: var(--blue-light);
 }
