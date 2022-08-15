@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  font-family: Garamond, Times, serif;
+
+  --blue-light: #c5d5ea;
+  --blue-dark: #8f9eb2;
+  --blue-bright: #d7f3ff;
+
+  --brown-light: #ffedcb;
+  --brown-dark: #6c3c00;
+}
+
+body {
+  background-color: var(--blue-bright);
+}
