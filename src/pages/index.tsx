@@ -7,10 +7,22 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import FinalVotesList from "../compontents/FinalVotes";
+import MovieInfoCard from "../compontents/MovieInfoCard";
+import { useState } from "react";
+import Header from "../compontents/Header";
 
 const Home: NextPage = () => {
+  //state
+  const [selectedMovie, setMovie] = useState("Halo Legends");
+
+  // queries
   const { data: session } = useSession();
+  const { data: movieData, isLoading } = trpc.useQuery([
+    "imdb.info",
+    { title: selectedMovie },
+  ]);
+
+  console.log(movieData);
 
   return (
     <div className="bg-blue-1">
@@ -21,24 +33,7 @@ const Home: NextPage = () => {
       </Head>
 
       <header className="container flex justify-between">
-        <h1 className="my-5 mx-3 text-5xl text-amber-900 text-center">
-          Shit Screen
-        </h1>
-        {session ? (
-          <Button
-            onClick={() => signOut()}
-            className="text-blue-700 text-2xl justify-self-end my-5"
-          >
-            Sign Out
-          </Button>
-        ) : (
-          <Button
-            onClick={() => signIn()}
-            className="text-blue-700 text-2xl justify-self-end"
-          >
-            Login
-          </Button>
-        )}
+        <Header session={session} />
       </header>
 
       <main className="container">
@@ -47,7 +42,7 @@ const Home: NextPage = () => {
             <Col>
               <div className="container">
                 <h3>Finals</h3>
-                <FinalVotesList />
+                <MovieInfoCard movie={movieData} />
               </div>
             </Col>
 
