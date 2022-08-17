@@ -24,4 +24,58 @@ export const MovieRouter = createRouter()
 
       return allMovies;
     },
+  })
+  .query("getUnavailable", {
+    async resolve({ ctx }) {
+      const Movies = ctx.prisma.movie;
+      const unavalible = await Movies.findMany({
+        where: { available: false },
+      });
+
+      return unavalible;
+    },
+  })
+  .query("getAvailable", {
+    async resolve({ ctx }) {
+      const Movies = ctx.prisma.movie;
+      const available = await Movies.findMany({
+        where: { available: true },
+      });
+
+      return available;
+    },
+  })
+  .query("getPicked", {
+    async resolve({ ctx }) {
+      const Movies = ctx.prisma.movie;
+      const picked = await Movies.findMany({
+        where: { picked: true },
+      });
+
+      return picked;
+    },
+  })
+  .query("getWinner", {
+    async resolve({ ctx }) {
+      const Movies = ctx.prisma.movie;
+      const winner = await Movies.findFirst({
+        where: { winner: true },
+      });
+
+      return winner;
+    },
+  })
+  .mutation("reset", {
+    async resolve({ ctx }) {
+      const Movies = ctx.prisma.movie;
+      const reset = await Movies.updateMany({
+        where: { picked: true },
+        data: {
+          winner: false,
+          picked: false,
+        },
+      });
+
+      return { msg: `complete` };
+    },
   });
