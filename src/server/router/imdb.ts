@@ -1,6 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
-import { MovieSearch, WikipediaData } from "../../types/imbd-data";
+import { MovieSearch, MovieData } from "../../types/imbd-data";
 
 export const ImdbRouter = createRouter().query("info", {
   input: z.object({
@@ -13,26 +13,27 @@ export const ImdbRouter = createRouter().query("info", {
     }
 
     // initial movie search
-    const MovieSearch = await fetch(
+    const MovieIdSearch = await fetch(
       `https://imdb-api.com/en/API/SearchMovie/k_41l41z8h/${input.title}`
     );
-    const movieSearchRes: MovieSearch = await MovieSearch.json();
+    const movieIdRes: MovieSearch = await MovieIdSearch.json();
     // I'm just going to assume the first result is correct
-    const movie = movieSearchRes.results[0];
-
-    console.log(movieSearchRes.results[0]);
+    const movieId = movieIdRes.results[0].id;
 
     // get plot description from wikipedia
-    const descSearch = await fetch(
-      `https://imdb-api.com/en/API/Wikipedia/k_41l41z8h/${movieSearchRes.results[0].id}`
-    );
-    const desc: WikipediaData = await descSearch.json();
-
-    // combine both results and return new object
-    return {
-      ...movie,
-      description: desc.plotShort.plaintext || "No Description Available",
-      year: desc.year,
+    const options = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "bb333b027cmsh807e47c92995a02p1d3f88jsn33ac06947caf",
+        "X-RapidAPI-Host": "movie-database-alternative.p.rapidapi.com",
+      },
     };
+    const descSearch = await fetch(
+      `https://movie-database-alternative.p.rapidapi.com/?r=json&i=${movieId}`,
+      options
+    );
+    const desc: MovieData = await descSearch.json();
+
+    return desc;
   },
 });

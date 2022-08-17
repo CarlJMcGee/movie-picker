@@ -6,6 +6,7 @@ import { trpc } from "../utils/trpc";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
 import MovieInfoCard from "../compontents/MovieInfoCard";
 import { useState } from "react";
@@ -13,7 +14,7 @@ import Header from "../compontents/Header";
 
 const Home: NextPage = () => {
   //state
-  const [selectedMovie, setMovie] = useState("Halo Legends");
+  const [selectedMovie, setMovie] = useState("The Cat in the Hat");
 
   // queries
   const { data: session } = useSession();
@@ -42,7 +43,19 @@ const Home: NextPage = () => {
             <Col>
               <div className="container">
                 <h3>Finals</h3>
-                <MovieInfoCard movie={movieData} />
+                <Accordion>
+                  {isLoading ? (
+                    <h3>Loading...</h3>
+                  ) : (
+                    <>
+                      <MovieInfoCard movie={movieData} />
+                      <MovieInfoCard movie={movieData} />
+                      <MovieInfoCard movie={movieData} />
+                      <MovieInfoCard movie={movieData} />
+                      <MovieInfoCard movie={movieData} />
+                    </>
+                  )}
+                </Accordion>
               </div>
             </Col>
 

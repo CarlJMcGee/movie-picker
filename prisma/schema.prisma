@@ -16,9 +16,18 @@ datasource db {
 
 model Movie {
     id        String   @id @default(cuid())
-    title     String
-    director  String?
-    imdbLink  String?
+    Title     String
+    Year      String
+    Rated     String
+    Released  String
+    Runtime   String
+    Genre     String
+    Director  String
+    Plot      String
+    Language  String
+    Poster    String
+    Metascore String
+    imdbID    String
     available Boolean  @default(false)
     picked    Boolean  @default(false)
     winner    Boolean  @default(false)
