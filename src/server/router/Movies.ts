@@ -159,6 +159,68 @@ export const MovieRouter = createRouter()
       return { msg: `Movie deleted fro db` };
     },
   })
+  .mutation("addVote", {
+    input: z.object({
+      imdbId: z.string().trim(),
+    }),
+    async resolve({ input, ctx }) {
+      const session = ctx.session;
+      const Movies = ctx.prisma.movie;
+
+      if (session?.user) {
+        try {
+          const movie = await Movies.update({
+            where: { imdbID: input.imdbId },
+            data: {
+              votes: { increment: 1 },
+            },
+          });
+
+          return { msg: `Vote counted!` };
+        } catch (err) {
+          if (err) console.error(err);
+        }
+      }
+    },
+  })
+  .mutation("removeVote", {
+    input: z.object({
+      imdbId: z.string().trim(),
+    }),
+    async resolve({ input, ctx }) {
+      const session = ctx.session;
+      const Movies = ctx.prisma.movie;
+
+      if (session?.user) {
+        try {
+          const movie = await Movies.update({
+            where: { imdbID: input.imdbId },
+            data: {
+              votes: { decrement: 1 },
+            },
+          });
+
+          // if votes go below 0, set votes to 0
+          if (movie.votes < 0) {
+            try {
+              await Movies.update({
+                where: { imdbID: input.imdbId },
+                data: {
+                  votes: { set: 0 },
+                },
+              });
+            } catch (err) {
+              if (err) console.error(err);
+            }
+          }
+
+          return { msg: `Vote removed!` };
+        } catch (err) {
+          if (err) console.error(err);
+        }
+      }
+    },
+  })
   // sets winner and picked movies back to defaul false state
   .mutation("reset", {
     async resolve({ ctx }) {
@@ -167,7 +229,7 @@ export const MovieRouter = createRouter()
         where: { votes: { gt: 0 } },
         data: {
           winner: false,
-          votes: 0,
+          votes: { set: 0 },
         },
       });
 
