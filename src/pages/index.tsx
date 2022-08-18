@@ -14,7 +14,7 @@ import Header from "../compontents/Header";
 
 const Home: NextPage = () => {
   //state
-  const [selectedMovie, setMovie] = useState("The Cat in the Hat");
+  const [selectedMovie, setMovie] = useState("");
 
   // queries
   const { data: session } = useSession();
