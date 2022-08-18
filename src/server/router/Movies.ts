@@ -1,7 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
 import { MovieData, MovieSearch } from "../../types/imbd-data";
-import { equal } from "assert";
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -10,61 +9,85 @@ export const MovieRouter = createRouter()
     }),
     async resolve({ input, ctx }) {
       const Movie = ctx.prisma.movie;
-      const movie = await Movie.findFirst({
-        where: {
-          Title: input.title,
-        },
-      });
+      try {
+        const movie = await Movie.findFirst({
+          where: {
+            Title: input.title,
+          },
+        });
 
-      return movie;
+        return movie;
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   })
   .query("getAll", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
-      const allMovies = await Movies.findMany();
+      try {
+        const allMovies = await Movies.findMany();
 
-      return allMovies;
+        return allMovies;
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   })
   .query("getUnavailable", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
-      const unavalible = await Movies.findMany({
-        where: { available: { equals: false } },
-      });
+      try {
+        const unavalible = await Movies.findMany({
+          where: { available: { equals: false } },
+        });
 
-      return unavalible;
+        return unavalible;
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   })
   .query("getAvailable", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
-      const available = await Movies.findMany({
-        where: { available: { equals: true } },
-      });
+      try {
+        const available = await Movies.findMany({
+          where: { available: { equals: true } },
+        });
 
-      return available;
+        return available;
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   })
   .query("getPicked", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
-      const picked = await Movies.findMany({
-        where: { votes: { gt: 0 } },
-      });
+      try {
+        const picked = await Movies.findMany({
+          where: { votes: { gt: 0 } },
+        });
 
-      return picked;
+        return picked;
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   })
   .query("getWinner", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
-      const winner = await Movies.findFirst({
-        where: { winner: { equals: true } },
-      });
+      try {
+        const winner = await Movies.findFirst({
+          where: { winner: { equals: true } },
+        });
 
-      return winner;
+        return winner;
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   })
   .mutation("add", {
@@ -142,21 +165,25 @@ export const MovieRouter = createRouter()
     }),
     async resolve({ input, ctx }) {
       // get info for loggedin user
-      const user = await ctx.prisma.user.findUnique({
-        where: { id: ctx.session?.user?.id },
-      });
+      try {
+        const user = await ctx.prisma.user.findUnique({
+          where: { id: ctx.session?.user?.id },
+        });
 
-      // check user's priviliges
-      if (user?.role !== "admin") {
-        return { msg: `Must be an Admin to perform task` };
+        // check user's priviliges
+        if (user?.role !== "admin") {
+          return { msg: `Must be an Admin to perform task` };
+        }
+
+        // if admin, delete movie
+        const deletedMovie = await ctx.prisma.movie.delete({
+          where: { imdbID: input.imdbId },
+        });
+
+        return { msg: `Movie deleted fro db` };
+      } catch (err) {
+        if (err) console.error(err);
       }
-
-      // if admin, delete movie
-      const deletedMovie = await ctx.prisma.movie.delete({
-        where: { imdbID: input.imdbId },
-      });
-
-      return { msg: `Movie deleted fro db` };
     },
   })
   .mutation("addVote", {
@@ -225,14 +252,18 @@ export const MovieRouter = createRouter()
   .mutation("reset", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
-      const reset = await Movies.updateMany({
-        where: { votes: { gt: 0 } },
-        data: {
-          winner: false,
-          votes: { set: 0 },
-        },
-      });
+      try {
+        const reset = await Movies.updateMany({
+          where: { votes: { gt: 0 } },
+          data: {
+            winner: false,
+            votes: { set: 0 },
+          },
+        });
 
-      return { msg: `complete` };
+        return { msg: `complete` };
+      } catch (err) {
+        if (err) console.error(err);
+      }
     },
   });
