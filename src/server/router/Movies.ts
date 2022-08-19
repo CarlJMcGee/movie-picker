@@ -182,7 +182,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
-        return { msg: `Movie deleted fro db` };
+        return { msg: `Movie deleted from db` };
       } catch (err) {
         if (err) console.error(err);
       }

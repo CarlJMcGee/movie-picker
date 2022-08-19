@@ -22,6 +22,7 @@ const Home: NextPage = () => {
   // queries
   const utils = trpc.useContext();
   const { data: session } = useSession();
+  // const {data: userData} = trpc.useQuery([""])
   const { data: movieList } = trpc.useQuery(["movie.getAll"]);
 
   // mutations
@@ -101,6 +102,7 @@ const Home: NextPage = () => {
                       <MovieInfoCard
                         movie={movie}
                         col="wish-list"
+                        session={session}
                         key={movie.imdbID}
                       />
                     ))}
