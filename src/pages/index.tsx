@@ -23,7 +23,8 @@ const Home: NextPage = () => {
   const utils = trpc.useContext();
   const { data: session } = useSession();
   // const {data: userData} = trpc.useQuery([""])
-  const { data: movieList } = trpc.useQuery(["movie.getAll"]);
+  const { data: unavailable } = trpc.useQuery(["movie.getUnavailable"]);
+  const { data: available } = trpc.useQuery(["movie.getAvailable"]);
 
   // mutations
   const addMovie = trpc.useMutation(["movie.add"], {
@@ -61,20 +62,19 @@ const Home: NextPage = () => {
             </Col>
 
             <Col>
-              <section className=" bg-blue-3 w-11/12 h-4/5 m-5 p-5">
+              <section className="w-11/12 h-4/5 m-5 p-5">
                 <h3>Choose Your Movie</h3>
-                <ol>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                  <li>movie</li>
-                </ol>
+                <Accordion>
+                  {Array.isArray(available) &&
+                    available.map((movie) => (
+                      <MovieInfoCard
+                        movie={movie}
+                        col="available"
+                        session={session}
+                        key={movie.imdbID}
+                      />
+                    ))}
+                </Accordion>
               </section>
             </Col>
 
@@ -97,8 +97,8 @@ const Home: NextPage = () => {
                   )}
                 </Button>
                 <Accordion>
-                  {Array.isArray(movieList) &&
-                    movieList.map((movie) => (
+                  {Array.isArray(unavailable) &&
+                    unavailable.map((movie) => (
                       <MovieInfoCard
                         movie={movie}
                         col="wish-list"

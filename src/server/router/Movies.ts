@@ -188,6 +188,54 @@ export const MovieRouter = createRouter()
       }
     },
   })
+  .mutation("makeAvailable", {
+    input: z.object({
+      imdbId: z.string().trim(),
+    }),
+    async resolve({ input, ctx }) {
+      try {
+        const user = await ctx.prisma.user.findUnique({
+          where: { id: ctx.session?.user?.id },
+        });
+
+        // check user's priviliges
+        //! if (user?.role !== "admin") {
+        //   return { msg: `Must be an Admin to perform task` };
+        // }
+
+        const makeAvailable = await ctx.prisma.movie.update({
+          where: { imdbID: input.imdbId },
+          data: { available: true },
+        });
+        return { msg: `${makeAvailable.Title} is now available for streaming` };
+      } catch (err) {}
+    },
+  })
+  .mutation("makeUnavailable", {
+    input: z.object({
+      imdbId: z.string().trim(),
+    }),
+    async resolve({ input, ctx }) {
+      try {
+        const user = await ctx.prisma.user.findUnique({
+          where: { id: ctx.session?.user?.id },
+        });
+
+        // check user's priviliges
+        if (user?.role !== "admin") {
+          return { msg: `Must be an Admin to perform task` };
+        }
+
+        const makeAvailable = await ctx.prisma.movie.update({
+          where: { imdbID: input.imdbId },
+          data: { available: false },
+        });
+        return {
+          msg: `${makeAvailable.Title} is no longer available for streaming`,
+        };
+      } catch (err) {}
+    },
+  })
   .mutation("addVote", {
     input: z.object({
       imdbId: z.string().trim(),

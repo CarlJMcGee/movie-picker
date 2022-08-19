@@ -11,9 +11,11 @@ import {
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 
+type Col = "wish-list" | "available" | "picked";
+
 export interface IMovieCardProps {
   movie: SchemaMovieData | undefined;
-  col: string;
+  col: Col;
   session: Session | null;
 }
 
@@ -24,13 +26,26 @@ export default function MovieInfoCard({
 }: IMovieCardProps) {
   const utils = trpc.useContext();
 
+  // queries
   const userData = {
     role: "admin",
   };
 
+  // mutations
+  const makeAvailable = trpc.useMutation(["movie.makeAvailable"], {
+    onSuccess() {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+      utils.invalidateQueries(["movie.getAvailable"]);
+    },
+  });
   const removeMovie = trpc.useMutation(["movie.remove"], {
     onSuccess() {
-      utils.invalidateQueries(["movie.getAll"]);
+      utils.invalidateQueries(["movie.getUnavailable"]);
+    },
+  });
+  const addVote = trpc.useMutation(["movie.addVote"], {
+    onSuccess() {
+      utils.invalidateQueries(["movie.getAvailable"]);
     },
   });
 
@@ -53,17 +68,45 @@ export default function MovieInfoCard({
                 src={movie?.Poster}
                 className="w-50"
               ></Image>
+              {/* unavailable */}
               {col === "wish-list" && userData.role === "admin" && (
-                <Button
-                  variant="danger"
-                  size="sm"
-                  className="bg-red-600"
-                  onClick={() =>
-                    removeMovie.mutate({ imdbId: movie?.imdbID || "" })
-                  }
-                >
-                  {removeMovie.isLoading ? "Removing..." : "Delete"}
-                </Button>
+                <>
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="bg-green-600"
+                    onClick={() =>
+                      makeAvailable.mutate({ imdbId: movie?.imdbID || "" })
+                    }
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    className="bg-red-600"
+                    onClick={() =>
+                      removeMovie.mutate({ imdbId: movie?.imdbID || "" })
+                    }
+                  >
+                    {removeMovie.isLoading ? "Removing..." : "Delete"}
+                  </Button>
+                </>
+              )}
+              {/* available */}
+              {col === "available" && (
+                <>
+                  <Button
+                    variant="info"
+                    size="sm"
+                    className="bg-cyan-400"
+                    onClick={() =>
+                      addVote.mutate({ imdbId: movie?.imdbID || "" })
+                    }
+                  >
+                    Vote
+                  </Button>
+                </>
               )}
             </Card.Body>
           </Card>
