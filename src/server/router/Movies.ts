@@ -244,19 +244,20 @@ export const MovieRouter = createRouter()
       const session = ctx.session;
       const Movies = ctx.prisma.movie;
 
-      if (session?.user) {
-        try {
-          const movie = await Movies.update({
-            where: { imdbID: input.imdbId },
-            data: {
-              votes: { increment: 1 },
-            },
-          });
+      if (!session?.user) {
+        return { msg: `Not Logged In` };
+      }
+      try {
+        const movie = await Movies.update({
+          where: { imdbID: input.imdbId },
+          data: {
+            votes: { increment: 1 },
+          },
+        });
 
-          return { msg: `Vote counted!` };
-        } catch (err) {
-          if (err) console.error(err);
-        }
+        return { msg: `Vote counted!` };
+      } catch (err) {
+        if (err) console.error(err);
       }
     },
   })

@@ -25,6 +25,7 @@ const Home: NextPage = () => {
   // const {data: userData} = trpc.useQuery([""])
   const { data: unavailable } = trpc.useQuery(["movie.getUnavailable"]);
   const { data: available } = trpc.useQuery(["movie.getAvailable"]);
+  const { data: picked } = trpc.useQuery(["movie.getPicked"]);
 
   // mutations
   const addMovie = trpc.useMutation(["movie.add"], {
@@ -51,18 +52,28 @@ const Home: NextPage = () => {
         <Header session={session} />
       </header>
 
-      <main className="container">
+      <main className="container m-0">
         <Container className="bg-blue-1">
           <Row>
-            <Col>
-              <div className="container">
+            <Col className="w-4/12">
+              <div className="w-11/12 h-4/5 m-3 p-0">
                 <h3>Finals</h3>
-                <Accordion></Accordion>
+                <Accordion>
+                  {Array.isArray(picked) &&
+                    picked.map((movie) => (
+                      <MovieInfoCard
+                        movie={movie}
+                        col="picked"
+                        session={session}
+                        key={movie.imdbID}
+                      />
+                    ))}
+                </Accordion>
               </div>
             </Col>
 
-            <Col>
-              <section className="w-11/12 h-4/5 m-5 p-5">
+            <Col className="w-4/12">
+              <section className="w-11/12 h-4/5 m-3 p-0">
                 <h3>Choose Your Movie</h3>
                 <Accordion>
                   {Array.isArray(available) &&
@@ -78,8 +89,8 @@ const Home: NextPage = () => {
               </section>
             </Col>
 
-            <Col>
-              <section className="w-11/12 h-4/5 m-5 p-5">
+            <Col className="w-4/12">
+              <section className="w-11/12 h-4/5 m-3 p-0">
                 <h3>Wish List</h3>
                 <input
                   type={"text"}

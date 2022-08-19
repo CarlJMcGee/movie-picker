@@ -10,6 +10,7 @@ import {
 } from "../types/imbd-data";
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
+import Badge from "react-bootstrap/Badge";
 
 type Col = "wish-list" | "available" | "picked";
 
@@ -46,6 +47,7 @@ export default function MovieInfoCard({
   const addVote = trpc.useMutation(["movie.addVote"], {
     onSuccess() {
       utils.invalidateQueries(["movie.getAvailable"]);
+      utils.invalidateQueries(["movie.getPicked"]);
     },
   });
 
@@ -57,7 +59,12 @@ export default function MovieInfoCard({
   return (
     <section className="">
       <Accordion.Item eventKey={movie?.imdbID || "0"}>
-        <Accordion.Header>{movie?.Title}</Accordion.Header>
+        <Accordion.Header>
+          {col === "picked" && (
+            <Badge bg="primary">Votes: {movie?.votes}</Badge>
+          )}{" "}
+          {movie?.Title}
+        </Accordion.Header>
         <Accordion.Body>
           <Card style={{}}>
             <Card.Body>
