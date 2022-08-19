@@ -16,14 +16,14 @@ datasource db {
 
 model Movie {
     id        String   @id @default(cuid())
-    Title     String
+    Title     String   @db.MediumText
     Year      String
     Rated     String
     Released  String
     Runtime   String
     Genre     String
-    Director  String
-    Plot      String
+    Director  String   @db.MediumText
+    Plot      String   @db.LongText
     Language  String
     Poster    String
     Metascore String

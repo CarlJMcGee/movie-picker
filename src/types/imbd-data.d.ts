@@ -13,7 +13,7 @@ export interface MovieSearch {
   errorMessage: string;
 }
 
-export interface MovieData {
+export interface FullMovieData {
   Title: string;
   Year: string;
   Rated: string;
@@ -39,4 +39,25 @@ export interface MovieData {
   Production: string;
   Website: string;
   Response: string;
+}
+
+export interface SchemaMovieData {
+  id: string;
+  Title: string;
+  Year: string;
+  Rated: string;
+  Released: string;
+  Runtime: string;
+  Genre: string;
+  Director: string;
+  Plot: string;
+  Language: string;
+  Poster: string;
+  Metascore: string;
+  imdbID: string;
+  available: boolean;
+  votes: number;
+  winner: boolean;
+  dateAdded: Date;
+  userId: string;
 }

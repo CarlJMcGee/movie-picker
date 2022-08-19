@@ -1,6 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
-import { MovieData, MovieSearch } from "../../types/imbd-data";
+import { FullMovieData, MovieSearch } from "../../types/imbd-data";
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -120,7 +120,7 @@ export const MovieRouter = createRouter()
             `https://movie-database-alternative.p.rapidapi.com/?r=json&i=${imdbId}`,
             options
           );
-          const movieInfo: MovieData = await InfoSearch.json();
+          const movieInfo: FullMovieData = await InfoSearch.json();
           const {
             Writer,
             Actors,
@@ -138,6 +138,7 @@ export const MovieRouter = createRouter()
             ...schemaReady
           } = movieInfo;
 
+          console.log(schemaReady);
           // upsert new movie with movieInfo
           const newMovie = await Movie.upsert({
             where: { imdbID: schemaReady.imdbID },
@@ -152,6 +153,7 @@ export const MovieRouter = createRouter()
               addedBy: true,
             },
           });
+
           return newMovie;
         } catch (err) {
           if (err) console.error(err);

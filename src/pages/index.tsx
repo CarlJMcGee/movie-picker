@@ -2,28 +2,40 @@ import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
+import { useState } from "react";
 
+import MovieInfoCard from "../compontents/MovieInfoCard";
+
+// react bootstrap
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
-import MovieInfoCard from "../compontents/MovieInfoCard";
-import { useState } from "react";
 import Header from "../compontents/Header";
+import Spinner from "react-bootstrap/Spinner";
 
 const Home: NextPage = () => {
   //state
-  const [selectedMovie, setMovie] = useState("");
+  const [movieTitle, setTitle] = useState("");
 
   // queries
+  const utils = trpc.useContext();
   const { data: session } = useSession();
-  const { data: movieData, isLoading } = trpc.useQuery([
-    "imdb.info",
-    { title: selectedMovie },
-  ]);
+  const { data: movieList } = trpc.useQuery(["movie.getAll"]);
 
-  console.log(movieData);
+  // mutations
+  const addMovie = trpc.useMutation(["movie.add"], {
+    onSuccess() {
+      utils.invalidateQueries(["movie.getAll"]);
+    },
+  });
+
+  const addMovieHandler = () => {
+    addMovie.mutate({ title: movieTitle });
+    setTitle("");
+    console.log(`Added Movie`);
+  };
 
   return (
     <div className="bg-blue-1">
@@ -43,19 +55,7 @@ const Home: NextPage = () => {
             <Col>
               <div className="container">
                 <h3>Finals</h3>
-                <Accordion>
-                  {isLoading ? (
-                    <h3>Loading...</h3>
-                  ) : (
-                    <>
-                      <MovieInfoCard movie={movieData} />
-                      <MovieInfoCard movie={movieData} />
-                      <MovieInfoCard movie={movieData} />
-                      <MovieInfoCard movie={movieData} />
-                      <MovieInfoCard movie={movieData} />
-                    </>
-                  )}
-                </Accordion>
+                <Accordion></Accordion>
               </div>
             </Col>
 
@@ -78,7 +78,34 @@ const Home: NextPage = () => {
             </Col>
 
             <Col>
-              <section className="bg-blue-2 m-5"></section>
+              <section className="w-11/12 h-4/5 m-5 p-5">
+                <h3>Wish List</h3>
+                <input
+                  type={"text"}
+                  value={movieTitle}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <Button
+                  className="bg-brown-1 text-blue-2"
+                  onClick={() => addMovieHandler()}
+                >
+                  {addMovie.isLoading ? (
+                    <Spinner animation="border" />
+                  ) : (
+                    "+ Movie"
+                  )}
+                </Button>
+                <Accordion>
+                  {Array.isArray(movieList) &&
+                    movieList.map((movie) => (
+                      <MovieInfoCard
+                        movie={movie}
+                        col="wish-list"
+                        key={movie.imdbID}
+                      />
+                    ))}
+                </Accordion>
+              </section>
             </Col>
           </Row>
         </Container>

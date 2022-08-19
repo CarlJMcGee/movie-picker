@@ -1,6 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
-import { MovieSearch, MovieData } from "../../types/imbd-data";
+import { MovieSearch, FullMovieData } from "../../types/imbd-data";
 
 export const ImdbRouter = createRouter().query("info", {
   input: z.object({
@@ -32,7 +32,7 @@ export const ImdbRouter = createRouter().query("info", {
       `https://movie-database-alternative.p.rapidapi.com/?r=json&i=${movieId}`,
       options
     );
-    const desc: MovieData = await descSearch.json();
+    const desc: FullMovieData = await descSearch.json();
 
     return desc;
   },
