@@ -46,7 +46,11 @@ export default function MovieInfoCard({
   });
   const addVote = trpc.useMutation(["movie.addVote"], {
     onSuccess() {
-      utils.invalidateQueries(["movie.getAvailable"]);
+      utils.invalidateQueries(["movie.getPicked"]);
+    },
+  });
+  const removeVote = trpc.useMutation(["movie.removeVote"], {
+    onSuccess() {
       utils.invalidateQueries(["movie.getPicked"]);
     },
   });
@@ -62,7 +66,7 @@ export default function MovieInfoCard({
         <Accordion.Header>
           {col === "picked" && (
             <Badge bg="primary">Votes: {movie?.votes}</Badge>
-          )}{" "}
+          )}
           {movie?.Title}
         </Accordion.Header>
         <Accordion.Body>
@@ -114,6 +118,19 @@ export default function MovieInfoCard({
                     Vote
                   </Button>
                 </>
+              )}
+              {/* picked */}
+              {col === "picked" && (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="bg-red-600"
+                  onClick={() =>
+                    removeVote.mutate({ imdbId: movie?.imdbID || "" })
+                  }
+                >
+                  Remove Vote
+                </Button>
               )}
             </Card.Body>
           </Card>
