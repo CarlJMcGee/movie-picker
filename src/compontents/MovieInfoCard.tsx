@@ -80,32 +80,34 @@ export default function MovieInfoCard({
                 className="w-50"
               ></Image>
               {/* unavailable */}
-              {col === "wish-list" && userData.role === "admin" && (
-                <>
-                  <Button
-                    variant="success"
-                    size="sm"
-                    className="bg-green-600"
-                    onClick={() =>
-                      makeAvailable.mutate({ imdbId: movie?.imdbID || "" })
-                    }
-                  >
-                    Add
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    className="bg-red-600"
-                    onClick={() =>
-                      removeMovie.mutate({ imdbId: movie?.imdbID || "" })
-                    }
-                  >
-                    {removeMovie.isLoading ? "Removing..." : "Delete"}
-                  </Button>
-                </>
-              )}
+              {session?.user &&
+                col === "wish-list" &&
+                userData.role === "admin" && (
+                  <>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      className="bg-green-600"
+                      onClick={() =>
+                        makeAvailable.mutate({ imdbId: movie?.imdbID || "" })
+                      }
+                    >
+                      Add
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="bg-red-600"
+                      onClick={() =>
+                        removeMovie.mutate({ imdbId: movie?.imdbID || "" })
+                      }
+                    >
+                      {removeMovie.isLoading ? "Removing..." : "Delete"}
+                    </Button>
+                  </>
+                )}
               {/* available */}
-              {col === "available" && (
+              {session?.user && col === "available" && (
                 <>
                   <Button
                     variant="info"
@@ -120,7 +122,7 @@ export default function MovieInfoCard({
                 </>
               )}
               {/* picked */}
-              {col === "picked" && (
+              {session?.user && col === "picked" && (
                 <Button
                   variant="danger"
                   size="sm"
