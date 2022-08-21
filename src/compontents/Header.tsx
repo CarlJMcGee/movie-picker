@@ -2,6 +2,7 @@ import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import * as React from "react";
 import Button from "react-bootstrap/Button";
+import UserDropdownMenu from "./UserDropdownMenu";
 
 export interface IHeaderProps {
   session: Session | null;
@@ -16,12 +17,10 @@ export default function Header(props: IHeaderProps) {
         Shit Screen
       </h1>
       {session ? (
-        <Button
-          onClick={() => signOut()}
-          className="text-blue-700 text-2xl justify-self-end my-5"
-        >
-          Sign Out
-        </Button>
+        <UserDropdownMenu
+          user={session.user?.name}
+          image={session.user?.image}
+        />
       ) : (
         <Button
           onClick={() => signIn()}

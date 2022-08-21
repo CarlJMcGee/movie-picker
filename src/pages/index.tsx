@@ -48,10 +48,10 @@ const Home: NextPage = () => {
           Loading <Spinner animation="border" />{" "}
         </h2>
       ) : (
-        <main className="container m-0">
+        <main className="container">
           <Container className="bg-blue-1">
             <Row>
-              <Col className="w-4/12">
+              <Col className="" sm={true} lg={true}>
                 {picked?.length > 0 ? (
                   <FinalsCol picked={picked} session={session} />
                 ) : (
@@ -59,11 +59,11 @@ const Home: NextPage = () => {
                 )}{" "}
               </Col>
 
-              <Col className="w-4/12">
+              <Col className="" sm={true} lg={true}>
                 <AvailableCol available={available} session={session} />
               </Col>
 
-              <Col className="w-4/12">
+              <Col className="" sm={true} lg={true}>
                 <WishList unavailable={unavailable} session={session} />
               </Col>
             </Row>
