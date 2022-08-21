@@ -37,9 +37,11 @@ const Home: NextPage = () => {
   ]);
   let { data: winner } = trpc.useQuery(["movie.getWinner"]);
 
-  unavailable = available || [];
+  unavailable = unavailable || [];
   available = available || [];
   picked = picked || [];
+
+  console.log(unavailable);
 
   return (
     <div className="bg-blue-1">
