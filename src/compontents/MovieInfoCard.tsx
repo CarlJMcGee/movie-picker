@@ -12,7 +12,7 @@ import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
 
-type Col = "wish-list" | "available" | "picked";
+type Col = "wish-list" | "available" | "picked" | "winner";
 
 export interface IMovieCardProps {
   movie: SchemaMovieData | undefined;

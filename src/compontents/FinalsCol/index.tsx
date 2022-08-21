@@ -17,12 +17,14 @@ export interface IFinalsColProps {
   picked: Movie[];
   session: Session | null;
   winner: Movie | null | undefined;
+  showWinner: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function FinalsCol({
   picked,
   session,
   winner,
+  showWinner,
 }: IFinalsColProps) {
   const utils = trpc.useContext();
   const NewWinner = trpc.useMutation("movie.setWinner", {
@@ -48,6 +50,7 @@ export default function FinalsCol({
     const winner = picked.find((movie) => movie.Title === drawing);
 
     NewWinner.mutate({ id: winner?.id || "" });
+    showWinner(true);
   };
 
   return (

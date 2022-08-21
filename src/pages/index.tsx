@@ -7,19 +7,21 @@ import { trpc } from "../utils/trpc";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Spinner from "react-bootstrap/Spinner";
+import Modal from "react-bootstrap/Modal";
+import Image from "react-bootstrap/Image";
+
 import Header from "../compontents/Header";
 import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
-import Spinner from "react-bootstrap/Spinner";
-import Alert from "react-bootstrap/Alert";
 
-import { Movie } from "@prisma/client";
 import { useState } from "react";
+import { Alert } from "react-bootstrap";
 
 const Home: NextPage = () => {
   //state
-  // const [winner, winnerIs] = useState("");
+  const [showWinner, setShowWinner] = useState(false);
 
   // queries
   const { data: session } = useSession();
@@ -56,9 +58,30 @@ const Home: NextPage = () => {
       ) : (
         <main className="container">
           {winner && (
-            <Alert variant="success">The winner is {winner.Title}</Alert>
+            <Modal show={showWinner} onHide={() => setShowWinner(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>The Winner is... {winner.Title}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Image src={winner.Poster} />
+                <p>Metascore: {winner.Metascore}</p>
+                <p>Rated {winner.Rated}</p>
+                <p>Directed by {winner.Director}</p>
+                <p>{winner.Runtime}</p>
+                <p>{winner.Plot}</p>
+              </Modal.Body>
+            </Modal>
           )}{" "}
           <Container className="bg-blue-1">
+            {winner && (
+              <Alert
+                variant="success"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowWinner(true)}
+              >
+                The winner is... {winner.Title}
+              </Alert>
+            )}
             <Row>
               <Col className="" sm={true} lg={true}>
                 {picked?.length > 0 ? (
@@ -66,6 +89,7 @@ const Home: NextPage = () => {
                     picked={picked}
                     session={session}
                     winner={winner}
+                    showWinner={setShowWinner}
                   />
                 ) : (
                   ""
