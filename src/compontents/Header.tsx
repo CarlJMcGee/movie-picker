@@ -24,7 +24,7 @@ export default function Header(props: IHeaderProps) {
       ) : (
         <Button
           onClick={() => signIn()}
-          className="text-blue-700 text-2xl justify-self-end my-5"
+          className="text-blue-700 justify-self-end my-5 h-10"
         >
           Login
         </Button>

@@ -19,7 +19,7 @@ export default function UserDropdownMenu({
   return (
     <Dropdown>
       <Dropdown.Toggle id="userDropdown" className="bg-blue-4 my-5 flex">
-        <Image src={image} thumbnail={true} className="w-8 mr-2" />
+        <Image src={image} thumbnail={false} className="w-8 mr-2" />
         {user}
       </Dropdown.Toggle>
       <Dropdown.Menu id="userDropdown" className="bg-blue-3">

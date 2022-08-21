@@ -46,9 +46,11 @@ export default function WishList({ unavailable, session }: IWishListProps) {
     <section className="w-11/12 h-4/5 m-3 p-0">
       <h3 className="text-4xl text-purple-1 m-1">
         Wish List{" "}
-        <Button className="text-blue-2" onClick={() => setAddModal(true)}>
-          {addMovie.isLoading ? <Spinner animation="border" /> : "➕"}
-        </Button>
+        {session?.user && (
+          <Button className="text-blue-2" onClick={() => setAddModal(true)}>
+            {addMovie.isLoading ? <Spinner animation="border" /> : "➕"}
+          </Button>
+        )}{" "}
       </h3>
       {session?.user && (
         <>
