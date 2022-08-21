@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 import MovieInfoCard from "../compontents/MovieInfoCard";
 
@@ -14,10 +14,13 @@ import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
 import Header from "../compontents/Header";
 import Spinner from "react-bootstrap/Spinner";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
 
 const Home: NextPage = () => {
   //state
   const [movieTitle, setTitle] = useState("");
+  const [showAddModal, setAddModal] = useState(false);
 
   // queries
   const utils = trpc.useContext();
@@ -30,13 +33,16 @@ const Home: NextPage = () => {
   // mutations
   const addMovie = trpc.useMutation(["movie.add"], {
     onSuccess() {
-      utils.invalidateQueries(["movie.getAll"]);
+      utils.invalidateQueries(["movie.getUnavailable"]);
     },
   });
 
-  const addMovieHandler = () => {
+  const addMovieHandler = (e: FormEvent<HTMLElement>) => {
+    e.preventDefault();
+
     addMovie.mutate({ title: movieTitle });
     setTitle("");
+    setAddModal(false);
     console.log(`Added Movie`);
   };
 
@@ -92,21 +98,64 @@ const Home: NextPage = () => {
             <Col className="w-4/12">
               <section className="w-11/12 h-4/5 m-3 p-0">
                 <h3>Wish List</h3>
-                <input
-                  type={"text"}
-                  value={movieTitle}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-                <Button
-                  className="bg-brown-1 text-blue-2"
-                  onClick={() => addMovieHandler()}
-                >
-                  {addMovie.isLoading ? (
-                    <Spinner animation="border" />
-                  ) : (
-                    "+ Movie"
-                  )}
-                </Button>
+                {session?.user && (
+                  <>
+                    <Modal
+                      show={showAddModal}
+                      onHide={() => setAddModal(false)}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Modal heading</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form
+                          id="add-movie-form"
+                          onSubmit={(e) => addMovieHandler(e)}
+                        >
+                          <Form.Group controlId="movie-title-input">
+                            <Form.Label>Movie Title:</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="e.g. Fateful Findings"
+                              onChange={(e) => setTitle(e.target.value)}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={() => setAddModal(false)}
+                          className="bg-blue-1 text-gray-500"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          form="add-movie-form"
+                          className="bg-blue-3 text-black"
+                        >
+                          {addMovie.isLoading ? (
+                            <Spinner animation="border" />
+                          ) : (
+                            "Add Movie"
+                          )}
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    <Button
+                      className="bg-brown-1 text-blue-2"
+                      onClick={() => setAddModal(true)}
+                    >
+                      {addMovie.isLoading ? (
+                        <Spinner animation="border" />
+                      ) : (
+                        "➕Movie"
+                      )}
+                    </Button>
+                  </>
+                )}
                 <Accordion>
                   {Array.isArray(unavailable) &&
                     unavailable.map((movie) => (

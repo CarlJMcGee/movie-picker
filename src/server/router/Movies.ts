@@ -40,6 +40,7 @@ export const MovieRouter = createRouter()
       try {
         const unavalible = await Movies.findMany({
           where: { available: { equals: false } },
+          orderBy: { Title: "asc" },
         });
 
         return unavalible;
@@ -54,6 +55,7 @@ export const MovieRouter = createRouter()
       try {
         const available = await Movies.findMany({
           where: { available: { equals: true } },
+          orderBy: { Title: "asc" },
         });
 
         return available;
@@ -68,6 +70,7 @@ export const MovieRouter = createRouter()
       try {
         const picked = await Movies.findMany({
           where: { votes: { gt: 0 } },
+          orderBy: { votes: "desc" },
         });
 
         return picked;
