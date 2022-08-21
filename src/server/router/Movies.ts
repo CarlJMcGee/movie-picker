@@ -202,9 +202,9 @@ export const MovieRouter = createRouter()
         });
 
         // check user's priviliges
-        //! if (user?.role !== "admin") {
-        //   return { msg: `Must be an Admin to perform task` };
-        // }
+        if (user?.role !== "admin") {
+          return { msg: `Must be an Admin to perform task` };
+        }
 
         const makeAvailable = await ctx.prisma.movie.update({
           where: { imdbID: input.imdbId },
@@ -296,6 +296,26 @@ export const MovieRouter = createRouter()
           }
 
           return { msg: `Vote removed!` };
+        } catch (err) {
+          if (err) console.error(err);
+        }
+      }
+    },
+  })
+  .mutation("setWinner", {
+    input: z.object({
+      id: z.string().trim(),
+    }),
+    async resolve({ input, ctx }) {
+      const Movie = ctx.prisma.movie;
+      if (ctx.session?.user) {
+        try {
+          const winner = await Movie.update({
+            where: { id: input.id },
+            data: { winner: true },
+          });
+
+          return { msg: `Winner set!` };
         } catch (err) {
           if (err) console.error(err);
         }

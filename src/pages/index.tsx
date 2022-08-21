@@ -12,9 +12,14 @@ import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
 import Spinner from "react-bootstrap/Spinner";
+import Alert from "react-bootstrap/Alert";
+
+import { Movie } from "@prisma/client";
+import { useState } from "react";
 
 const Home: NextPage = () => {
   //state
+  // const [winner, winnerIs] = useState("");
 
   // queries
   const { data: session } = useSession();
@@ -28,6 +33,7 @@ const Home: NextPage = () => {
   let { data: picked, isLoading: gettingPicked } = trpc.useQuery([
     "movie.getPicked",
   ]);
+  let { data: winner } = trpc.useQuery(["movie.getWinner"]);
 
   unavailable = available || [];
   available = available || [];
@@ -49,11 +55,18 @@ const Home: NextPage = () => {
         </h2>
       ) : (
         <main className="container">
+          {winner && (
+            <Alert variant="success">The winner is {winner.Title}</Alert>
+          )}{" "}
           <Container className="bg-blue-1">
             <Row>
               <Col className="" sm={true} lg={true}>
                 {picked?.length > 0 ? (
-                  <FinalsCol picked={picked} session={session} />
+                  <FinalsCol
+                    picked={picked}
+                    session={session}
+                    winner={winner}
+                  />
                 ) : (
                   ""
                 )}{" "}
