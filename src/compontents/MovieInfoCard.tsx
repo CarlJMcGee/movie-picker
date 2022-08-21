@@ -73,6 +73,7 @@ export default function MovieInfoCard({
               <Card.Text className="text-sm">{descShort}...</Card.Text>
               <Image
                 thumbnail={false}
+                alt="movie poster"
                 src={movie?.Poster}
                 className="w-50"
               ></Image>

@@ -63,7 +63,7 @@ const Home: NextPage = () => {
                 <Modal.Title>The Winner is... {winner.Title}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <Image src={winner.Poster} />
+                <Image src={winner.Poster} alt="winning movie's poster" />
                 <p>Metascore: {winner.Metascore}</p>
                 <p>Rated {winner.Rated}</p>
                 <p>Directed by {winner.Director}</p>
