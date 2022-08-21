@@ -12,7 +12,7 @@ export default function Header(props: IHeaderProps) {
 
   return (
     <>
-      <h1 className="my-5 mx-3 text-5xl text-amber-900 text-center">
+      <h1 className="my-5 mx-3 text-6xl text-amber-900 font-bold font-serif text-shadow-lg shadow-brown-2  text-center">
         Shit Screen
       </h1>
       {session ? (
