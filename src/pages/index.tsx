@@ -41,8 +41,6 @@ const Home: NextPage = () => {
   available = available || [];
   picked = picked || [];
 
-  console.log(unavailable);
-
   return (
     <div className="bg-blue-1">
       <Head>

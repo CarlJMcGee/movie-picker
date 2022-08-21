@@ -28,9 +28,7 @@ export default function MovieInfoCard({
   const utils = trpc.useContext();
 
   // queries
-  const userData = {
-    role: "admin",
-  };
+  const { data: userData } = trpc.useQuery(["user.me"]);
 
   // mutations
   const makeAvailable = trpc.useMutation(["movie.makeAvailable"], {
@@ -80,7 +78,7 @@ export default function MovieInfoCard({
               {/* unavailable */}
               {session?.user &&
                 col === "wish-list" &&
-                userData.role === "admin" && (
+                userData?.role === "admin" && (
                   <>
                     <Button
                       variant="success"
