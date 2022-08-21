@@ -23,6 +23,12 @@ export default function UserDropdownMenu({
 
   const makeAdmin = trpc.useMutation("user.makeAdmin");
 
+  const adminHandler = async () => {
+    await makeAdmin.mutateAsync({ password: pass });
+
+    setShowAdmin(false);
+  };
+
   return (
     <>
       <Modal show={showAdmin} onHide={() => setShowAdmin(false)}>
@@ -35,12 +41,9 @@ export default function UserDropdownMenu({
             onChange={(e) => setPass(e.target.value)}
             placeholder="password"
             className="border-2 bg-brown-1"
+            value={pass}
           />
-          <button
-            onClick={() => makeAdmin.mutate({ password: `deeznuts, gottem!` })}
-          >
-            Submit
-          </button>
+          <button onClick={() => adminHandler()}>Submit</button>
         </Modal.Body>
       </Modal>
       <Dropdown>
