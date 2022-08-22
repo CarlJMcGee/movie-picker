@@ -1,5 +1,4 @@
-
-# Sh*t Screen Movie Randomizer
+# Sh\*t Screen Movie Randomizer
 
 [![license badge](https://img.shields.io/badge/license-MIT--License-blue)](#License)
 
@@ -54,4 +53,7 @@ If you have any issues, submit them to my [Github](https://github.com/CarlJMcGee
 or
 
 If you have any other questions or inquiries, you can contact me at [carl.jack.mcgee@gmail.com](mailto:carl.jack.mcgee@gmail.com)
-  
+
+## Check it out >>[Here](https://shit-screen-movie-picker.vercel.app/)<<
+
+<img src="./Screenshot%202022-08-22%20at%2017-56-33%20Shit%20Screen.png" width="1000px">
