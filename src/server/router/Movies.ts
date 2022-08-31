@@ -1,6 +1,10 @@
 import { createRouter } from "./context";
 import { z } from "zod";
-import { FullMovieData, MovieSearch } from "../../types/imbd-data";
+import {
+  AutocompleteRes,
+  FullMovieData,
+  MovieSearch,
+} from "../../types/imbd-data";
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -336,6 +340,35 @@ export const MovieRouter = createRouter()
         });
 
         return { msg: `complete` };
+      } catch (err) {
+        if (err) console.error(err);
+      }
+    },
+  })
+  .mutation("autoComplete", {
+    input: z.object({
+      search: z.string().trim(),
+    }),
+    async resolve({ input: { search } }) {
+      try {
+        const url = `https://online-movie-database.p.rapidapi.com/auto-complete?q=${search}`;
+
+        const options = {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key":
+              "bb333b027cmsh807e47c92995a02p1d3f88jsn33ac06947caf",
+            "X-RapidAPI-Host": "online-movie-database.p.rapidapi.com",
+          },
+        };
+
+        const req = await fetch(url, options);
+        const res: AutocompleteRes = await req.json();
+
+        if (!res) {
+          const empty: AutocompleteRes = {} as AutocompleteRes;
+        }
+        return res;
       } catch (err) {
         if (err) console.error(err);
       }

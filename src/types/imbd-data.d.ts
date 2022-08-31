@@ -61,3 +61,19 @@ export interface SchemaMovieData {
   dateAdded: Date;
   userId: string;
 }
+
+export interface AutocompleteRes {
+  d: [
+    {
+      id: string;
+      l: string;
+      q: string;
+      qid: string;
+      rank: string;
+      s: string;
+      y: string;
+    }
+  ];
+  q: string;
+  v: number;
+}

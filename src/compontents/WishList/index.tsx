@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Session } from "next-auth";
 import { Movie } from "@prisma/client";
 import { trpc } from "../../utils/trpc";
@@ -13,6 +13,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
+import { AutocompleteRes } from "../../types/imbd-data";
 
 export interface IWishListProps {
   unavailable: Movie[] | undefined;
@@ -32,6 +33,9 @@ export default function WishList({ unavailable, session }: IWishListProps) {
       utils.invalidateQueries(["movie.getUnavailable"]);
     },
   });
+  const { mutateAsync: search, data: searchRes } = trpc.useMutation([
+    "movie.autoComplete",
+  ]);
 
   // handlers
   const addMovieHandler = (e: FormEvent<HTMLElement>) => {
@@ -41,6 +45,25 @@ export default function WishList({ unavailable, session }: IWishListProps) {
     setTitle("");
     setAddModal(false);
   };
+
+  const searchHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  useEffect(() => {
+    if (movieTitle === "") {
+      return;
+    }
+
+    let checkInput = setTimeout(() => {
+      search({ search: movieTitle });
+    }, 1000);
+    return () => {
+      clearTimeout(checkInput);
+    };
+  }, [movieTitle]);
+
+  const searchTitles = searchRes?.d.flatMap((movie) => movie.l);
 
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
@@ -64,8 +87,9 @@ export default function WishList({ unavailable, session }: IWishListProps) {
                   <Form.Label>Movie Title:</Form.Label>
                   <Form.Control
                     type="text"
+                    autoComplete="off"
                     placeholder="e.g. Fateful Findings"
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={searchHandler}
                   />
                 </Form.Group>
               </Form>
