@@ -11,6 +11,9 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 
+// mantine
+import { Autocomplete } from "@mantine/core";
+
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
 import { AutocompleteRes } from "../../types/imbd-data";
@@ -46,9 +49,9 @@ export default function WishList({ unavailable, session }: IWishListProps) {
     setAddModal(false);
   };
 
-  const searchHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
+  // const searchHandler = async (e: ) => {
+  //   setTitle(e.target.value);
+  // };
 
   useEffect(() => {
     if (movieTitle === "") {
@@ -57,13 +60,14 @@ export default function WishList({ unavailable, session }: IWishListProps) {
 
     let checkInput = setTimeout(() => {
       search({ search: movieTitle });
-    }, 1000);
+    }, 500);
     return () => {
       clearTimeout(checkInput);
     };
   }, [movieTitle]);
 
-  const searchTitles = searchRes?.d.flatMap((movie) => movie.l);
+  const searchTitles =
+    movieTitle === "" ? [] : searchRes?.d.flatMap((movie) => movie.l);
 
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
@@ -85,11 +89,11 @@ export default function WishList({ unavailable, session }: IWishListProps) {
               <Form id="add-movie-form" onSubmit={(e) => addMovieHandler(e)}>
                 <Form.Group controlId="movie-title-input">
                   <Form.Label>Movie Title:</Form.Label>
-                  <Form.Control
-                    type="text"
-                    autoComplete="off"
+                  <Autocomplete
+                    data={searchTitles || [""]}
+                    value={movieTitle}
                     placeholder="e.g. Fateful Findings"
-                    onChange={searchHandler}
+                    onChange={(title) => setTitle(title)}
                   />
                 </Form.Group>
               </Form>
