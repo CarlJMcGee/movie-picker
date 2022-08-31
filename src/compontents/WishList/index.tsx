@@ -16,7 +16,6 @@ import { Autocomplete } from "@mantine/core";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
-import { AutocompleteRes } from "../../types/imbd-data";
 
 export interface IWishListProps {
   unavailable: Movie[] | undefined;
@@ -48,10 +47,6 @@ export default function WishList({ unavailable, session }: IWishListProps) {
     setTitle("");
     setAddModal(false);
   };
-
-  // const searchHandler = async (e: ) => {
-  //   setTitle(e.target.value);
-  // };
 
   useEffect(() => {
     if (movieTitle === "") {

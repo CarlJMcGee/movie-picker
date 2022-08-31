@@ -8,7 +8,7 @@ A place for me and my friends to keep track of our movie night choices, add movi
 
 ## Table of Contents
 
-- [Installation](#installation)
+- [Change Log](#change-log)
 
 - [Usage](#usage)
 
@@ -18,13 +18,13 @@ A place for me and my friends to keep track of our movie night choices, add movi
 
 - [Contributing](#contributing)
 
-- [Tests](#tests)
-
 - [Questions](#questions)
 
-## Installation
+## Change Log
 
-n/a
+### v1.5
+
+- added an autocomplete popup when typing movie titles into search input
 
 ## Usage
 
@@ -41,10 +41,6 @@ Created by CarlJMcGee
 ## Contributing
 
 [Click to see the Contributor Covenant guidelines](./code_of_conduct.md)
-
-## Tests
-
-n/a
 
 ## Questions?
 
