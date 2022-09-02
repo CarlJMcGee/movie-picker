@@ -7,9 +7,10 @@ import Accordion from "react-bootstrap/Accordion";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
+import { MovieQuery } from "../../types/imbd-data";
 
 export interface IAvailableColProps {
-  available: Movie[] | undefined;
+  available: MovieQuery[] | undefined;
   session: Session | null;
 }
 
@@ -17,6 +18,8 @@ export default function AvailableCol({
   available,
   session,
 }: IAvailableColProps) {
+  console.log(available);
+
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
       <h3 className="text-3xl text-blue-5 m-2">Choose Your Movie</h3>

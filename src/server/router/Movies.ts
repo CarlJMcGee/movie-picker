@@ -18,6 +18,9 @@ export const MovieRouter = createRouter()
           where: {
             Title: input.title,
           },
+          include: {
+            addedBy: true,
+          },
         });
 
         return movie;
@@ -30,7 +33,7 @@ export const MovieRouter = createRouter()
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;
       try {
-        const allMovies = await Movies.findMany();
+        const allMovies = await Movies.findMany({ include: { addedBy: true } });
 
         return allMovies;
       } catch (err) {
@@ -45,6 +48,9 @@ export const MovieRouter = createRouter()
         const unavalible = await Movies.findMany({
           where: { available: { equals: false } },
           orderBy: { Title: "asc" },
+          include: {
+            addedBy: true,
+          },
         });
 
         return unavalible;
@@ -60,6 +66,9 @@ export const MovieRouter = createRouter()
         const available = await Movies.findMany({
           where: { available: { equals: true } },
           orderBy: { Title: "asc" },
+          include: {
+            addedBy: true,
+          },
         });
 
         return available;
@@ -75,6 +84,9 @@ export const MovieRouter = createRouter()
         const picked = await Movies.findMany({
           where: { votes: { gt: 0 } },
           orderBy: { votes: "desc" },
+          include: {
+            addedBy: true,
+          },
         });
 
         return picked;
@@ -89,6 +101,9 @@ export const MovieRouter = createRouter()
       try {
         const winner = await Movies.findFirst({
           where: { winner: { equals: true } },
+          include: {
+            addedBy: true,
+          },
         });
 
         return winner;

@@ -12,9 +12,10 @@ import Button from "react-bootstrap/Button";
 import MovieInfoCard from "../MovieInfoCard";
 import random from "../../utils/random";
 import { trpc } from "../../utils/trpc";
+import { MovieQuery } from "../../types/imbd-data";
 
 export interface IFinalsColProps {
-  picked: Movie[];
+  picked: MovieQuery[];
   session: Session | null;
   winner: Movie | null | undefined;
   showWinner: Dispatch<SetStateAction<boolean>>;

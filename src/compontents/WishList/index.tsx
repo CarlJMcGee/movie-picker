@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, FormEvent, useEffect } from "react";
 import { Session } from "next-auth";
-import { Movie } from "@prisma/client";
+import { Movie, User } from "@prisma/client";
 import { trpc } from "../../utils/trpc";
 
 // bootstrap
@@ -16,9 +16,10 @@ import { Autocomplete } from "@mantine/core";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
+import { MovieQuery } from "../../types/imbd-data";
 
 export interface IWishListProps {
-  unavailable: Movie[] | undefined;
+  unavailable: MovieQuery[] | undefined;
   session: Session | null;
 }
 

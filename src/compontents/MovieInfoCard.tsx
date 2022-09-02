@@ -7,15 +7,17 @@ import {
   MovieSearch,
   FullMovieData,
   SchemaMovieData,
+  MovieQuery,
 } from "../types/imbd-data";
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
+import { Movie, User } from "@prisma/client";
 
 type Col = "wish-list" | "available" | "picked" | "winner";
 
 export interface IMovieCardProps {
-  movie: SchemaMovieData | undefined;
+  movie: MovieQuery | undefined;
   col: Col;
   session: Session | null;
 }
@@ -68,7 +70,15 @@ export default function MovieInfoCard({
           <Card style={{}}>
             <Card.Body>
               <Card.Title>{movie?.Title}</Card.Title>
-              <Card.Text className="text-sm">{descShort}...</Card.Text>
+              <Card.Text className="text-sm">
+                <ul>
+                  <li>{movie?.Director}</li>
+                  <li>{movie?.Rated}</li>
+                  <li>{movie?.Runtime}</li>
+                  <li>{movie?.Metascore}</li>
+                  <li>{movie?.addedBy.name}</li>
+                </ul>
+              </Card.Text>
               <Image
                 thumbnail={false}
                 alt="movie poster"

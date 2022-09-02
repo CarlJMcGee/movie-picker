@@ -1,3 +1,5 @@
+import { Movie, User } from "@prisma/client";
+
 export interface MovieSearch {
   searchType: string;
   expression: string;
@@ -77,3 +79,5 @@ export interface AutocompleteRes {
   q: string;
   v: number;
 }
+
+export type MovieQuery = Movie & { addedBy: User };
