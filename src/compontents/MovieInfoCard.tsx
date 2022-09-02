@@ -64,21 +64,46 @@ export default function MovieInfoCard({
           {col === "picked" && (
             <Badge bg="primary">Votes: {movie?.votes}</Badge>
           )}
-          {movie?.Title}
+          {movie?.Title} | {movie?.Rated} | {movie?.Runtime}
         </Accordion.Header>
         <Accordion.Body>
           <Card style={{}}>
             <Card.Body>
               <Card.Title>{movie?.Title}</Card.Title>
-              <Card.Text className="text-sm">
-                <ul>
-                  <li>{movie?.Director}</li>
-                  <li>{movie?.Rated}</li>
-                  <li>{movie?.Runtime}</li>
-                  <li>{movie?.Metascore}</li>
-                  <li>{movie?.addedBy.name}</li>
-                </ul>
-              </Card.Text>
+              {/* <Card.Text className="text-sm"> */}
+              <ul className="text-sm">
+                <li className="my-2">
+                  <span className="font-semibold">Directed by</span>{" "}
+                  {movie?.Director}
+                </li>
+                <li className="my-2">
+                  <span className="font-bold">"</span>
+                  {movie?.Plot}
+                  <span className="font-bold">"</span>
+                </li>
+                <li className="my-2">
+                  <span className="font-semibold">Rated:</span> {movie?.Rated}
+                </li>
+                <li>
+                  <span className="font-semibold">Released in</span>{" "}
+                  {movie?.Year}
+                </li>
+                <li className="my-2">
+                  <span className="font-semibold">Length:</span>{" "}
+                  {movie?.Runtime}
+                </li>
+                <li className="my-2">
+                  <span className="font-semibold">Metascore:</span>{" "}
+                  {movie?.Metascore === "N/A"
+                    ? "N/A"
+                    : movie?.Metascore + "/100"}
+                </li>
+                <li className="my-2">
+                  <span className="font-semibold">Suggested by</span>{" "}
+                  {movie?.addedBy.name}
+                </li>
+              </ul>
+              {/* </Card.Text> */}
               <Image
                 thumbnail={false}
                 alt="movie poster"
@@ -118,7 +143,7 @@ export default function MovieInfoCard({
                   <Button
                     variant="info"
                     size="sm"
-                    className="bg-cyan-400"
+                    className="bg-cyan-400 w-50"
                     onClick={() =>
                       addVote.mutate({ imdbId: movie?.imdbID || "" })
                     }
