@@ -77,9 +77,9 @@ export default function MovieInfoCard({
                   {movie?.Director}
                 </li>
                 <li className="my-2">
-                  <span className="font-bold">"</span>
+                  <span className="font-bold">&quot;</span>
                   {movie?.Plot}
-                  <span className="font-bold">"</span>
+                  <span className="font-bold">&quot;</span>
                 </li>
                 <li className="my-2">
                   <span className="font-semibold">Rated:</span> {movie?.Rated}
