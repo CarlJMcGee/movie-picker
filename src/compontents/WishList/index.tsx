@@ -33,7 +33,7 @@ export default function WishList({ unavailable, session }: IWishListProps) {
   // mutations
   const addMovie = trpc.useMutation(["movie.add"], {
     onSuccess() {
-      utils.invalidateQueries(["movie.getUnavailable"]);
+      // utils.invalidateQueries(["movie.getUnavailable"]);
     },
   });
   const { mutateAsync: search, data: searchRes } = trpc.useMutation([

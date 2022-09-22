@@ -1,10 +1,15 @@
 import { createRouter } from "./context";
 import { z } from "zod";
+import { EventEmitter } from "events";
+import * as trpc from "@trpc/server";
 import {
   AutocompleteRes,
   FullMovieData,
   MovieSearch,
 } from "../../types/imbd-data";
+import { Movie } from "@prisma/client";
+
+const ee = new EventEmitter();
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -75,6 +80,22 @@ export const MovieRouter = createRouter()
       } catch (err) {
         if (err) console.error(err);
       }
+    },
+  })
+  .subscription("getAvailableSub", {
+    async resolve({ ctx }) {
+      return new trpc.Subscription<Movie[]>((emit) => {
+        const Movies = ctx.prisma.movie;
+        const onAdd = (data: Movie[]) => {
+          emit.data(data);
+        };
+
+        ee.on("add", onAdd);
+
+        return () => {
+          ee.off("add", onAdd);
+        };
+      });
     },
   })
   .query("getPicked", {
@@ -229,6 +250,11 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: true },
         });
+        const available = await ctx.prisma.movie.findMany({
+          where: { available: true },
+        });
+        ee.emit("add", available);
+
         return { msg: `${makeAvailable.Title} is now available for streaming` };
       } catch (err) {}
     },
