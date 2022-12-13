@@ -1,10 +1,20 @@
 import { createRouter } from "./context";
 import { z } from "zod";
-import {
+import type {
   AutocompleteRes,
   FullMovieData,
   MovieSearch,
 } from "../../types/imbd-data";
+import Pusher from "pusher";
+import { Movie, User } from "@prisma/client";
+
+const pusher = new Pusher({
+  appId: "1524050",
+  key: "a180f97e989a0566ac2f",
+  secret: "37fdb663607d04957599",
+  cluster: "us2",
+  useTLS: true,
+});
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -162,20 +172,19 @@ export const MovieRouter = createRouter()
 
           console.log(schemaReady);
           // upsert new movie with movieInfo
-          const newMovie = await Movie.upsert({
+          const newMovie: Movie & { addedBy: User } = await Movie.upsert({
             where: { imdbID: schemaReady.imdbID },
             create: {
               ...schemaReady,
               userId: session?.user?.id || "Unknown",
             },
             update: {},
-            select: {
-              Title: true,
-              imdbID: true,
+            include: {
               addedBy: true,
             },
           });
 
+          pusher.trigger("main-channel", "new-movie", { movie: newMovie });
           return newMovie;
         } catch (err) {
           if (err) console.error(err);

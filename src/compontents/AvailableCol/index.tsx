@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Movie } from "@prisma/client";
 import { Session } from "next-auth";
 
 // bootstrap

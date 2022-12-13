@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useState, FormEvent, useEffect } from "react";
 import { Session } from "next-auth";
-import { Movie, User } from "@prisma/client";
 import { trpc } from "../../utils/trpc";
 
 // bootstrap
@@ -32,9 +31,9 @@ export default function WishList({ unavailable, session }: IWishListProps) {
 
   // mutations
   const addMovie = trpc.useMutation(["movie.add"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getUnavailable"]);
+    // },
   });
   const { mutateAsync: search, data: searchRes } = trpc.useMutation([
     "movie.autoComplete",

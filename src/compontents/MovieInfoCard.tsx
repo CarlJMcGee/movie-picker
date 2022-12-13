@@ -3,16 +3,10 @@ import Button from "react-bootstrap/Button";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
-import {
-  MovieSearch,
-  FullMovieData,
-  SchemaMovieData,
-  MovieQuery,
-} from "../types/imbd-data";
+import type { MovieQuery } from "../types/imbd-data";
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
-import { Movie, User } from "@prisma/client";
 
 type Col = "wish-list" | "available" | "picked" | "winner";
 
