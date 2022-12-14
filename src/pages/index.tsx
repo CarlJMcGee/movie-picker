@@ -16,16 +16,10 @@ import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 import pusherJs from "pusher-js";
 import { MovieQuery } from "../types/imbd-data";
-
-pusherJs.logToConsole = true;
-const pusher = new pusherJs("a180f97e989a0566ac2f", {
-  cluster: "us2",
-  forceTLS: true,
-});
 
 const Home: NextPage = () => {
   //state
@@ -51,14 +45,22 @@ const Home: NextPage = () => {
   picked = picked || [];
 
   // pusher websocket
-  const mainChan = pusher.subscribe("main-channel");
-  mainChan.bind("added_to_wishlist", (movie: MovieQuery) => {
-    utils.invalidateQueries(["movie.getUnavailable"]);
-  });
-  mainChan.bind("removed_from_wishlist", ({ msg }: { msg: string }) => {
-    console.log(msg);
-    utils.invalidateQueries(["movie.getUnavailable"]);
-  });
+  useEffect(() => {
+    pusherJs.logToConsole = true;
+    const pusher = new pusherJs("a180f97e989a0566ac2f", {
+      cluster: "us2",
+      forceTLS: true,
+    });
+    const mainChan = pusher.subscribe("main-channel");
+    mainChan.bind("added_to_wishlist", (movie: MovieQuery) => {
+      console.log(movie.Title);
+      utils.invalidateQueries(["movie.getUnavailable"]);
+    });
+    mainChan.bind("removed_from_wishlist", ({ msg }: { msg: string }) => {
+      console.log(msg);
+      utils.invalidateQueries(["movie.getUnavailable"]);
+    });
+  }, []);
 
   return (
     <div className="bg-blue-1">
