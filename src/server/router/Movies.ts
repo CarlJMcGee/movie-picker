@@ -3,6 +3,7 @@ import { z } from "zod";
 import type {
   AutocompleteRes,
   FullMovieData,
+  MovieQuery,
   MovieSearch,
 } from "../../types/imbd-data";
 import Pusher from "pusher";
@@ -16,7 +17,7 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
-const main = "main-channel";
+const mainChan = "main-channel";
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -186,7 +187,7 @@ export const MovieRouter = createRouter()
             },
           });
 
-          await pusher.trigger(main, "added_to_wishlist", {
+          await pusher.trigger(mainChan, "added_to_wishlist", {
             movie: newMovie,
           });
           return newMovie;
@@ -217,7 +218,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
-        await pusher.trigger(main, "removed_from_wishlist", {
+        await pusher.trigger(mainChan, "removed_from_wishlist", {
           msg: `Movie deleted from db`,
         });
         return { msg: `Movie deleted from db` };
@@ -245,6 +246,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: true },
         });
+        await pusher.trigger(mainChan, "made_available", makeAvailable);
         return { msg: `${makeAvailable.Title} is now available for streaming` };
       } catch (err) {}
     },
@@ -264,12 +266,13 @@ export const MovieRouter = createRouter()
           return { msg: `Must be an Admin to perform task` };
         }
 
-        const makeAvailable = await ctx.prisma.movie.update({
+        const makeUnavailable = await ctx.prisma.movie.update({
           where: { imdbID: input.imdbId },
           data: { available: false },
         });
+        await pusher.trigger(mainChan, "made_unavailable", makeUnavailable);
         return {
-          msg: `${makeAvailable.Title} is no longer available for streaming`,
+          msg: `${makeUnavailable.Title} is no longer available for streaming`,
         };
       } catch (err) {}
     },
@@ -293,6 +296,7 @@ export const MovieRouter = createRouter()
           },
         });
 
+        await pusher.trigger(mainChan, "added_vote", movie);
         return { msg: `Vote counted!` };
       } catch (err) {
         if (err) console.error(err);
@@ -330,6 +334,7 @@ export const MovieRouter = createRouter()
             }
           }
 
+          await pusher.trigger(mainChan, "removed_vote", movie);
           return { msg: `Vote removed!` };
         } catch (err) {
           if (err) console.error(err);
@@ -345,11 +350,13 @@ export const MovieRouter = createRouter()
       const Movie = ctx.prisma.movie;
       if (ctx.session?.user) {
         try {
-          const winner = await Movie.update({
+          const winner: MovieQuery = await Movie.update({
             where: { id: input.id },
             data: { winner: true },
+            include: { addedBy: true },
           });
 
+          await pusher.trigger(mainChan, "we_have_a_winner", winner);
           return { msg: `Winner set!` };
         } catch (err) {
           if (err) console.error(err);
@@ -370,6 +377,7 @@ export const MovieRouter = createRouter()
           },
         });
 
+        await pusher.trigger(mainChan, "reset", { msg: `complete` });
         return { msg: `complete` };
       } catch (err) {
         if (err) console.error(err);

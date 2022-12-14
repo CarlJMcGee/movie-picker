@@ -28,10 +28,10 @@ export default function MovieInfoCard({
 
   // mutations
   const makeAvailable = trpc.useMutation(["movie.makeAvailable"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-      utils.invalidateQueries(["movie.getAvailable"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getUnavailable"]);
+    //   utils.invalidateQueries(["movie.getAvailable"]);
+    // },
   });
   const removeMovie = trpc.useMutation(["movie.remove"], {
     // onSuccess() {
@@ -39,17 +39,15 @@ export default function MovieInfoCard({
     // },
   });
   const addVote = trpc.useMutation(["movie.addVote"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getPicked"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getPicked"]);
+    // },
   });
   const removeVote = trpc.useMutation(["movie.removeVote"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getPicked"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getPicked"]);
+    // },
   });
-
-  const descShort = movie?.Plot.split(" ", 35).join(" ");
 
   return (
     <section className="">

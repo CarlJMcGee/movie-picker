@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 import pusherJs from "pusher-js";
 import { MovieQuery } from "../types/imbd-data";
+import { util } from "zod/lib/helpers/util";
 
 const Home: NextPage = () => {
   //state
@@ -52,13 +53,35 @@ const Home: NextPage = () => {
       forceTLS: true,
     });
     const mainChan = pusher.subscribe("main-channel");
-    mainChan.bind("added_to_wishlist", (movie: MovieQuery) => {
-      console.log(movie.Title);
+
+    mainChan.bind("added_to_wishlist", () => {
       utils.invalidateQueries(["movie.getUnavailable"]);
     });
-    mainChan.bind("removed_from_wishlist", ({ msg }: { msg: string }) => {
-      console.log(msg);
+
+    mainChan.bind("removed_from_wishlist", () => {
       utils.invalidateQueries(["movie.getUnavailable"]);
+    });
+
+    mainChan.bind("made_available", () => {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+      utils.invalidateQueries(["movie.getAvailable"]);
+    });
+
+    mainChan.bind("made_unavailable", () => {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+      utils.invalidateQueries(["movie.getAvailable"]);
+    });
+
+    mainChan.bind("added_vote", () => {
+      utils.invalidateQueries(["movie.getPicked"]);
+    });
+    mainChan.bind("removed_vote", () => {
+      utils.invalidateQueries(["movie.getPicked"]);
+    });
+
+    mainChan.bind("we_have_a_winner", (movie: MovieQuery) => {
+      setWinner(movie);
+      setShowWinner(true);
     });
   }, []);
 
