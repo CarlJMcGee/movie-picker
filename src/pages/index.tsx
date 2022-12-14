@@ -16,7 +16,7 @@ import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert } from "react-bootstrap";
 import pusherJs from "pusher-js";
 import { MovieQuery } from "../types/imbd-data";
@@ -50,11 +50,13 @@ const Home: NextPage = () => {
   available = available || [];
   picked = picked || [];
 
-  useEffect(() => {});
-
   // pusher websocket
   const mainChan = pusher.subscribe("main-channel");
-  mainChan.bind("new-movie", (movie: MovieQuery) => {
+  mainChan.bind("added_to_wishlist", (movie: MovieQuery) => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+  });
+  mainChan.bind("removed_from_wishlist", ({ msg }: { msg: string }) => {
+    console.log(msg);
     utils.invalidateQueries(["movie.getUnavailable"]);
   });
 

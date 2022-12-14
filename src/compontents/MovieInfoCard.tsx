@@ -34,9 +34,9 @@ export default function MovieInfoCard({
     },
   });
   const removeMovie = trpc.useMutation(["movie.remove"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getUnavailable"]);
+    // },
   });
   const addVote = trpc.useMutation(["movie.addVote"], {
     onSuccess() {

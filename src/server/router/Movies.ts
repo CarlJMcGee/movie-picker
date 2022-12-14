@@ -16,6 +16,8 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
+const main = "main-channel";
+
 export const MovieRouter = createRouter()
   .query("findOne", {
     input: z.object({
@@ -184,7 +186,9 @@ export const MovieRouter = createRouter()
             },
           });
 
-          pusher.trigger("main-channel", "new-movie", { movie: newMovie });
+          pusher.trigger(main, "added_to_wishlist", {
+            movie: newMovie,
+          });
           return newMovie;
         } catch (err) {
           if (err) console.error(err);
@@ -213,6 +217,9 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
+        pusher.trigger(main, "removed_from_wishlist", {
+          msg: `Movie deleted from db`,
+        });
         return { msg: `Movie deleted from db` };
       } catch (err) {
         if (err) console.error(err);
