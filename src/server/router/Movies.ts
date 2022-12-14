@@ -186,7 +186,7 @@ export const MovieRouter = createRouter()
             },
           });
 
-          pusher.trigger(main, "added_to_wishlist", {
+          await pusher.trigger(main, "added_to_wishlist", {
             movie: newMovie,
           });
           return newMovie;
@@ -217,7 +217,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
-        pusher.trigger(main, "removed_from_wishlist", {
+        await pusher.trigger(main, "removed_from_wishlist", {
           msg: `Movie deleted from db`,
         });
         return { msg: `Movie deleted from db` };
