@@ -83,6 +83,12 @@ const Home: NextPage = () => {
       setWinner(movie);
       setShowWinner(true);
     });
+
+    mainChan.bind("reset", () => {
+      utils.invalidateQueries(["movie.getWinner"]);
+      utils.invalidateQueries(["movie.getPicked"]);
+      setWinner(null);
+    });
   }, []);
 
   return (
