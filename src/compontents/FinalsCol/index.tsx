@@ -29,15 +29,15 @@ export default function FinalsCol({
 }: IFinalsColProps) {
   const utils = trpc.useContext();
   const NewWinner = trpc.useMutation("movie.setWinner", {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getWinner"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getWinner"]);
+    // },
   });
   const reset = trpc.useMutation(["movie.reset"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getWinner"]);
-      utils.invalidateQueries(["movie.getPicked"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getWinner"]);
+    //   utils.invalidateQueries(["movie.getPicked"]);
+    // },
   });
 
   const decideMovie = async (picked: Movie[]) => {

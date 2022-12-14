@@ -3,16 +3,10 @@ import Button from "react-bootstrap/Button";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
-import {
-  MovieSearch,
-  FullMovieData,
-  SchemaMovieData,
-  MovieQuery,
-} from "../types/imbd-data";
+import type { MovieQuery } from "../types/imbd-data";
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
-import { Movie, User } from "@prisma/client";
 
 type Col = "wish-list" | "available" | "picked" | "winner";
 
@@ -34,28 +28,26 @@ export default function MovieInfoCard({
 
   // mutations
   const makeAvailable = trpc.useMutation(["movie.makeAvailable"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-      utils.invalidateQueries(["movie.getAvailable"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getUnavailable"]);
+    //   utils.invalidateQueries(["movie.getAvailable"]);
+    // },
   });
   const removeMovie = trpc.useMutation(["movie.remove"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getUnavailable"]);
+    // },
   });
   const addVote = trpc.useMutation(["movie.addVote"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getPicked"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getPicked"]);
+    // },
   });
   const removeVote = trpc.useMutation(["movie.removeVote"], {
-    onSuccess() {
-      utils.invalidateQueries(["movie.getPicked"]);
-    },
+    // onSuccess() {
+    //   utils.invalidateQueries(["movie.getPicked"]);
+    // },
   });
-
-  const descShort = movie?.Plot.split(" ", 35).join(" ");
 
   return (
     <section className="">

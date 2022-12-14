@@ -16,16 +16,21 @@ import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
+import pusherJs from "pusher-js";
+import { MovieQuery } from "../types/imbd-data";
+import { util } from "zod/lib/helpers/util";
 
 const Home: NextPage = () => {
   //state
+  const [winner, setWinner] = useState<MovieQuery | null>(null);
   const [showWinner, setShowWinner] = useState(false);
+
+  const utils = trpc.useContext();
 
   // queries
   const { data: session } = useSession();
-  // const {data: userData} = trpc.useQuery([""])
   let { data: unavailable, isLoading: gettingUnavailable } = trpc.useQuery([
     "movie.getUnavailable",
   ]);
@@ -35,11 +40,56 @@ const Home: NextPage = () => {
   let { data: picked, isLoading: gettingPicked } = trpc.useQuery([
     "movie.getPicked",
   ]);
-  let { data: winner } = trpc.useQuery(["movie.getWinner"]);
 
   unavailable = unavailable || [];
   available = available || [];
   picked = picked || [];
+
+  // pusher websocket
+  useEffect(() => {
+    pusherJs.logToConsole = true;
+    const pusher = new pusherJs("a180f97e989a0566ac2f", {
+      cluster: "us2",
+      forceTLS: true,
+    });
+    const mainChan = pusher.subscribe("main-channel");
+
+    mainChan.bind("added_to_wishlist", () => {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+    });
+
+    mainChan.bind("removed_from_wishlist", () => {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+    });
+
+    mainChan.bind("made_available", () => {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+      utils.invalidateQueries(["movie.getAvailable"]);
+    });
+
+    mainChan.bind("made_unavailable", () => {
+      utils.invalidateQueries(["movie.getUnavailable"]);
+      utils.invalidateQueries(["movie.getAvailable"]);
+    });
+
+    mainChan.bind("added_vote", () => {
+      utils.invalidateQueries(["movie.getPicked"]);
+    });
+    mainChan.bind("removed_vote", () => {
+      utils.invalidateQueries(["movie.getPicked"]);
+    });
+
+    mainChan.bind("we_have_a_winner", (movie: MovieQuery) => {
+      setWinner(movie);
+      setShowWinner(true);
+    });
+
+    mainChan.bind("reset", () => {
+      utils.invalidateQueries(["movie.getWinner"]);
+      utils.invalidateQueries(["movie.getPicked"]);
+      setWinner(null);
+    });
+  }, []);
 
   return (
     <div className="bg-blue-1">

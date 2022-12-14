@@ -13,5 +13,6 @@
       "username": "root",
       "password": "z@ai5GzE#Jv7"
     }
-  ]
+  ],
+  "dotenv.enableAutocloaking": true
 }
