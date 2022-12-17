@@ -62,7 +62,9 @@ export default function WishList({ unavailable, session }: IWishListProps) {
   }, [movieTitle]);
 
   const searchTitles =
-    movieTitle === "" ? [] : searchRes?.d.flatMap((movie) => movie.l);
+    movieTitle === ""
+      ? []
+      : searchRes?.d.flatMap((movie) => `${movie.l} | ${movie.y}`);
 
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">

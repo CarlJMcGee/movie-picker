@@ -27,27 +27,17 @@ export default function MovieInfoCard({
   const { data: userData } = trpc.useQuery(["user.me"]);
 
   // mutations
-  const makeAvailable = trpc.useMutation(["movie.makeAvailable"], {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getUnavailable"]);
-    //   utils.invalidateQueries(["movie.getAvailable"]);
-    // },
-  });
-  const removeMovie = trpc.useMutation(["movie.remove"], {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getUnavailable"]);
-    // },
-  });
-  const addVote = trpc.useMutation(["movie.addVote"], {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getPicked"]);
-    // },
-  });
-  const removeVote = trpc.useMutation(["movie.removeVote"], {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getPicked"]);
-    // },
-  });
+  const makeAvailable = trpc.useMutation(["movie.makeAvailable"]);
+  const { mutate: makeUnavailable } = trpc.useMutation([
+    "movie.makeUnavailable",
+  ]);
+  const removeMovie = trpc.useMutation(["movie.remove"]);
+  const addVote = trpc.useMutation(["movie.addVote"]);
+  const removeVote = trpc.useMutation(["movie.removeVote"]);
+
+  if (!movie) {
+    return <h3>Movie Not Found</h3>;
+  }
 
   return (
     <section className="">
@@ -131,18 +121,28 @@ export default function MovieInfoCard({
                 )}
               {/* available */}
               {session?.user && col === "available" && (
-                <>
+                <div className="flex flex-col">
                   <Button
                     variant="info"
                     size="sm"
-                    className="bg-cyan-400 w-50"
+                    className="bg-cyan-400 text-white w-50"
                     onClick={() =>
                       addVote.mutate({ imdbId: movie?.imdbID || "" })
                     }
                   >
                     Vote
                   </Button>
-                </>
+                  {userData?.role === "admin" && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="bg-red-600 w-50"
+                      onClick={() => makeUnavailable({ imdbId: movie?.imdbID })}
+                    >
+                      Make Unavailable
+                    </Button>
+                  )}
+                </div>
               )}
               {/* picked */}
               {session?.user && col === "picked" && (
