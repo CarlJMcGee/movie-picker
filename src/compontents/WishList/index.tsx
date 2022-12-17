@@ -16,6 +16,7 @@ import { Autocomplete } from "@mantine/core";
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
 import { MovieQuery } from "../../types/imbd-data";
+import { motion } from "framer-motion";
 
 export interface IWishListProps {
   unavailable: MovieQuery[] | undefined;
@@ -68,14 +69,29 @@ export default function WishList({ unavailable, session }: IWishListProps) {
 
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
-      <h3 className="text-4xl text-purple-1 m-1">
+      <motion.h3
+        className="text-4xl text-purple-1 m-1"
+        initial={{
+          scale: "60%",
+          opacity: 0,
+        }}
+        animate={{
+          scale: "100%",
+          opacity: 100,
+        }}
+        transition={{
+          type: "spring",
+          bounce: 0.65,
+          delay: 0.4,
+        }}
+      >
         Wish List{" "}
         {session?.user && (
           <Button className="text-blue-2" onClick={() => setAddModal(true)}>
             {addMovie.isLoading ? <Spinner animation="border" /> : "➕"}
           </Button>
         )}{" "}
-      </h3>
+      </motion.h3>
       {session?.user && (
         <>
           <Modal show={showAddModal} onHide={() => setAddModal(false)}>

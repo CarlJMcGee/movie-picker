@@ -7,6 +7,7 @@ import type { MovieQuery } from "../types/imbd-data";
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
+import { motion } from "framer-motion";
 
 type Col = "wish-list" | "available" | "picked" | "winner";
 
@@ -21,8 +22,6 @@ export default function MovieInfoCard({
   col,
   session,
 }: IMovieCardProps) {
-  const utils = trpc.useContext();
-
   // queries
   const { data: userData } = trpc.useQuery(["user.me"]);
 
@@ -39,8 +38,29 @@ export default function MovieInfoCard({
     return <h3>Movie Not Found</h3>;
   }
 
+  const delayMap = new Map<Col, number>([
+    ["wish-list", 0],
+    ["available", 0.3],
+    ["picked", 0.6],
+    ["winner", 0],
+  ]);
+
   return (
-    <section className="">
+    <motion.section
+      initial={{
+        opacity: 0,
+        y: -100,
+      }}
+      animate={{
+        opacity: 100,
+        y: 0,
+      }}
+      transition={{
+        type: "tween",
+        duration: 0.7,
+        delay: delayMap.get(col),
+      }}
+    >
       <Accordion.Item eventKey={movie?.imdbID || "0"}>
         <Accordion.Header>
           {col === "picked" && (
@@ -161,6 +181,6 @@ export default function MovieInfoCard({
           </Card>
         </Accordion.Body>
       </Accordion.Item>
-    </section>
+    </motion.section>
   );
 }

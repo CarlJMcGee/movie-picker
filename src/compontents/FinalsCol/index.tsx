@@ -13,6 +13,7 @@ import MovieInfoCard from "../MovieInfoCard";
 import random from "../../utils/random";
 import { trpc } from "../../utils/trpc";
 import { MovieQuery } from "../../types/imbd-data";
+import { motion } from "framer-motion";
 
 export interface IFinalsColProps {
   picked: MovieQuery[];
@@ -56,7 +57,22 @@ export default function FinalsCol({
 
   return (
     <div className="w-11/12 h-4/5 m-3 p-0">
-      <h3 className="text-4xl text-blue-4 m-1">
+      <motion.h3
+        className="text-4xl text-blue-4 m-1"
+        initial={{
+          scale: "60%",
+          opacity: 0,
+        }}
+        animate={{
+          scale: "100%",
+          opacity: 100,
+        }}
+        transition={{
+          type: "spring",
+          bounce: 0.65,
+          delay: 1,
+        }}
+      >
         Finals{" "}
         {!winner ? (
           <Button
@@ -75,7 +91,7 @@ export default function FinalsCol({
             Reset
           </Button>
         )}
-      </h3>
+      </motion.h3>
       <Accordion>
         {Array.isArray(picked) &&
           picked.map((movie) => (
