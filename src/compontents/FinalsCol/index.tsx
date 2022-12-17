@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Movie } from "@prisma/client";
 import { Session } from "next-auth";
-import { useState } from "react";
 import { SetStateAction, Dispatch } from "react";
 
 // bootstrap
@@ -10,10 +9,14 @@ import Button from "react-bootstrap/Button";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
+
+// utils
 import random from "../../utils/random";
 import { trpc } from "../../utils/trpc";
 import { MovieQuery } from "../../types/imbd-data";
-import { motion } from "framer-motion";
+
+// framer motion
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface IFinalsColProps {
   picked: MovieQuery[];
@@ -28,18 +31,8 @@ export default function FinalsCol({
   winner,
   showWinner,
 }: IFinalsColProps) {
-  const utils = trpc.useContext();
-  const NewWinner = trpc.useMutation("movie.setWinner", {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getWinner"]);
-    // },
-  });
-  const reset = trpc.useMutation(["movie.reset"], {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getWinner"]);
-    //   utils.invalidateQueries(["movie.getPicked"]);
-    // },
-  });
+  const NewWinner = trpc.useMutation("movie.setWinner");
+  const reset = trpc.useMutation(["movie.reset"]);
 
   const decideMovie = async (picked: Movie[]) => {
     const finalCount: string[] = [];
@@ -56,7 +49,7 @@ export default function FinalsCol({
   };
 
   return (
-    <div className="w-11/12 h-4/5 m-3 p-0">
+    <motion.div className="w-11/12 h-4/5 m-3 p-0">
       <motion.h3
         className="text-4xl text-blue-4 m-1"
         initial={{
@@ -93,16 +86,18 @@ export default function FinalsCol({
         )}
       </motion.h3>
       <Accordion>
-        {Array.isArray(picked) &&
-          picked.map((movie) => (
-            <MovieInfoCard
-              movie={movie}
-              col="picked"
-              session={session}
-              key={movie.imdbID}
-            />
-          ))}
+        <AnimatePresence>
+          {Array.isArray(picked) &&
+            picked.map((movie) => (
+              <MovieInfoCard
+                movie={movie}
+                col="picked"
+                session={session}
+                key={movie.imdbID}
+              />
+            ))}
+        </AnimatePresence>
       </Accordion>
-    </div>
+    </motion.div>
   );
 }

@@ -7,7 +7,7 @@ import Accordion from "react-bootstrap/Accordion";
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
 import { MovieQuery } from "../../types/imbd-data";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export interface IAvailableColProps {
   available: MovieQuery[] | undefined;
@@ -39,15 +39,17 @@ export default function AvailableCol({
         Choose Your Movie
       </motion.h3>
       <Accordion>
-        {Array.isArray(available) &&
-          available.map((movie) => (
-            <MovieInfoCard
-              movie={movie}
-              col="available"
-              session={session}
-              key={movie.imdbID}
-            />
-          ))}
+        <AnimatePresence>
+          {Array.isArray(available) &&
+            available.map((movie) => (
+              <MovieInfoCard
+                movie={movie}
+                col="available"
+                session={session}
+                key={movie.imdbID}
+              />
+            ))}
+        </AnimatePresence>
       </Accordion>
     </section>
   );

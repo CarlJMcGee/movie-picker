@@ -7,7 +7,7 @@ import type { MovieQuery } from "../types/imbd-data";
 import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Col = "wish-list" | "available" | "picked" | "winner";
 
@@ -47,13 +47,18 @@ export default function MovieInfoCard({
 
   return (
     <motion.section
+      key={movie.id}
       initial={{
         opacity: 0,
-        y: -100,
+        x: -100,
       }}
       animate={{
         opacity: 100,
-        y: 0,
+        x: 0,
+      }}
+      exit={{
+        opacity: 0,
+        x: 100,
       }}
       transition={{
         type: "tween",

@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 import pusherJs from "pusher-js";
 import { MovieQuery } from "../types/imbd-data";
-import { util } from "zod/lib/helpers/util";
+import { AnimatePresence } from "framer-motion";
 
 const Home: NextPage = () => {
   //state

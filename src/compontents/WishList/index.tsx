@@ -16,7 +16,7 @@ import { Autocomplete } from "@mantine/core";
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
 import { MovieQuery } from "../../types/imbd-data";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export interface IWishListProps {
   unavailable: MovieQuery[] | undefined;
@@ -136,15 +136,17 @@ export default function WishList({ unavailable, session }: IWishListProps) {
         </>
       )}
       <Accordion>
-        {Array.isArray(unavailable) &&
-          unavailable.map((movie) => (
-            <MovieInfoCard
-              movie={movie}
-              col="wish-list"
-              session={session}
-              key={movie.imdbID}
-            />
-          ))}
+        <AnimatePresence>
+          {Array.isArray(unavailable) &&
+            unavailable.map((movie) => (
+              <MovieInfoCard
+                movie={movie}
+                col="wish-list"
+                session={session}
+                key={movie.imdbID}
+              />
+            ))}
+        </AnimatePresence>
       </Accordion>
     </section>
   );
