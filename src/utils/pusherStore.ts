@@ -1,13 +1,15 @@
 import PusherClient, { Channel } from "pusher-js";
 import PusherServer from "pusher";
 
-interface IPusherInfo {
-  appId: string;
-  key: string;
-  secret: string;
-  cluster: string;
-  useTLS: boolean;
-}
+type channelEvt =
+  | "added_to_wishlist"
+  | "removed_from_wishlist"
+  | "made_available"
+  | "made_unavailable"
+  | "added_vote"
+  | "removed_vote"
+  | "we_have_a_winner"
+  | "reset";
 
 PusherClient.logToConsole = true;
 export const pusherClient = new PusherClient("a180f97e989a0566ac2f", {
@@ -40,3 +42,22 @@ export const useChannel = (
   }
   return { Subscription, Bind };
 };
+
+export async function useTrigger<D = void>(
+  channel: string[],
+  event: channelEvt,
+  data: D
+): Promise<PusherServer.Response>;
+export async function useTrigger<D = void>(
+  channel: string,
+  event: channelEvt,
+  data: D
+): Promise<PusherServer.Response>;
+export async function useTrigger<D = void>(
+  channel: string | string[],
+  event: channelEvt,
+  data: D
+): Promise<PusherServer.Response> {
+  const trigger = pusherSever().trigger(channel, event, data);
+  return trigger;
+}

@@ -6,7 +6,7 @@ import type {
   MovieQuery,
   MovieSearch,
 } from "../../types/imbd-data";
-import { pusherSever, channels } from "../../utils/pusherStore";
+import { pusherSever, channels, useTrigger } from "../../utils/pusherStore";
 import { Movie, User } from "@prisma/client";
 
 const pusher = pusherSever();
@@ -179,7 +179,7 @@ export const MovieRouter = createRouter()
             },
           });
 
-          await pusher.trigger(channels.main, "added_to_wishlist", {
+          await useTrigger(channels.main, "added_to_wishlist", {
             movie: newMovie,
           });
           return newMovie;
@@ -210,7 +210,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
-        await pusher.trigger(channels.main, "removed_from_wishlist", {
+        await useTrigger(channels.main, "removed_from_wishlist", {
           msg: `Movie deleted from db`,
         });
         return { msg: `Movie deleted from db` };
@@ -238,7 +238,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: true },
         });
-        await pusher.trigger(channels.main, "made_available", makeAvailable);
+        await useTrigger(channels.main, "made_available", makeAvailable);
         return { msg: `${makeAvailable.Title} is now available for streaming` };
       } catch (err) {}
     },
@@ -262,11 +262,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: false },
         });
-        await pusher.trigger(
-          channels.main,
-          "made_unavailable",
-          makeUnavailable
-        );
+        await useTrigger(channels.main, "made_unavailable", makeUnavailable);
         return {
           msg: `${makeUnavailable.Title} is no longer available for streaming`,
         };
@@ -292,7 +288,7 @@ export const MovieRouter = createRouter()
           },
         });
 
-        await pusher.trigger(channels.main, "added_vote", movie);
+        await useTrigger(channels.main, "added_vote", movie);
         return { msg: `Vote counted!` };
       } catch (err) {
         if (err) console.error(err);
@@ -330,7 +326,7 @@ export const MovieRouter = createRouter()
             }
           }
 
-          await pusher.trigger(channels.main, "removed_vote", movie);
+          await useTrigger(channels.main, "removed_vote", movie);
           return { msg: `Vote removed!` };
         } catch (err) {
           if (err) console.error(err);
@@ -352,7 +348,7 @@ export const MovieRouter = createRouter()
             include: { addedBy: true },
           });
 
-          await pusher.trigger(channels.main, "we_have_a_winner", winner);
+          await useTrigger(channels.main, "we_have_a_winner", winner);
           return { msg: `Winner set!` };
         } catch (err) {
           if (err) console.error(err);
@@ -373,7 +369,7 @@ export const MovieRouter = createRouter()
           },
         });
 
-        await pusher.trigger(channels.main, "reset", { msg: `complete` });
+        await useTrigger(channels.main, "reset", { msg: `complete` });
         return { msg: `complete` };
       } catch (err) {
         if (err) console.error(err);
