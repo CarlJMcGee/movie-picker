@@ -47,9 +47,9 @@ const Home: NextPage = () => {
   picked = picked || [];
 
   // pusher websocket
+  const { Bind, Subscription } = useChannel(channels.main);
   useEffect(() => {
     // const mainChan = pusherClient.subscribe(channels.main);
-    const { Bind, Subscription } = useChannel(channels.main);
 
     Bind("added_to_wishlist", () => {
       utils.invalidateQueries(["movie.getUnavailable"]);

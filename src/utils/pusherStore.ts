@@ -43,17 +43,17 @@ export const useChannel = (
   return { Subscription, Bind };
 };
 
-export async function useTrigger<D = void>(
+export async function pushTrigger<D = void>(
   channel: string[],
   event: channelEvt,
   data: D
 ): Promise<PusherServer.Response>;
-export async function useTrigger<D = void>(
+export async function pushTrigger<D = void>(
   channel: string,
   event: channelEvt,
   data: D
 ): Promise<PusherServer.Response>;
-export async function useTrigger<D = void>(
+export async function pushTrigger<D = void>(
   channel: string | string[],
   event: channelEvt,
   data: D
