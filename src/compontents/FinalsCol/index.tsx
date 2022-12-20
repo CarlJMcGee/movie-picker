@@ -11,7 +11,7 @@ import Button from "react-bootstrap/Button";
 import MovieInfoCard from "../MovieInfoCard";
 
 // utils
-import random from "../../utils/random";
+import { numBetween } from "@carljmcgee/lol-random";
 import { trpc } from "../../utils/trpc";
 import { MovieQuery } from "../../types/imbd-data";
 
@@ -41,7 +41,7 @@ export default function FinalsCol({
         finalCount.push(movie.Title);
       }
     });
-    const drawing = finalCount[random(0, finalCount.length - 1)] || "";
+    const drawing = finalCount[numBetween(0, finalCount.length - 1)] || "";
     const winner = picked.find((movie) => movie.Title === drawing);
 
     NewWinner.mutate({ id: winner?.id || "" });

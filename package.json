@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@carljmcgee/lol-random": "^1.0.2",
     "@carljmcgee/set-map-plus": "^1.0.1",
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",

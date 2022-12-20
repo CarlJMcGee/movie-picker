@@ -48,49 +48,43 @@ const Home: NextPage = () => {
 
   // pusher websocket
   const { Bind, Subscription } = useChannel(channels.main);
-  useEffect(() => {
-    // const mainChan = pusherClient.subscribe(channels.main);
+  // const mainChan = pusherClient.subscribe(channels.main);
 
-    Bind("added_to_wishlist", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    });
+  Bind("added_to_wishlist", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+  });
 
-    Bind("removed_from_wishlist", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    });
+  Bind("removed_from_wishlist", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+  });
 
-    Bind("made_available", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-      utils.invalidateQueries(["movie.getAvailable"]);
-    });
+  Bind("made_available", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+    utils.invalidateQueries(["movie.getAvailable"]);
+  });
 
-    Bind("made_unavailable", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-      utils.invalidateQueries(["movie.getAvailable"]);
-    });
+  Bind("made_unavailable", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+    utils.invalidateQueries(["movie.getAvailable"]);
+  });
 
-    Bind("added_vote", () => {
-      utils.invalidateQueries(["movie.getPicked"]);
-    });
-    Bind("removed_vote", () => {
-      utils.invalidateQueries(["movie.getPicked"]);
-    });
+  Bind("added_vote", () => {
+    utils.invalidateQueries(["movie.getPicked"]);
+  });
+  Bind("removed_vote", () => {
+    utils.invalidateQueries(["movie.getPicked"]);
+  });
 
-    Bind<MovieQuery>("we_have_a_winner", (movie: MovieQuery) => {
-      setWinner(movie);
-      setShowWinner(true);
-    });
+  Bind<MovieQuery>("we_have_a_winner", (movie: MovieQuery) => {
+    setWinner(movie);
+    setShowWinner(true);
+  });
 
-    Bind("reset", () => {
-      utils.invalidateQueries(["movie.getWinner"]);
-      utils.invalidateQueries(["movie.getPicked"]);
-      setWinner(null);
-    });
-
-    return () => {
-      Subscription.unsubscribe();
-    };
-  }, []);
+  Bind("reset", () => {
+    utils.invalidateQueries(["movie.getWinner"]);
+    utils.invalidateQueries(["movie.getPicked"]);
+    setWinner(null);
+  });
 
   return (
     <div className="bg-blue-1">
