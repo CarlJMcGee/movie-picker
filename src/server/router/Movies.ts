@@ -6,18 +6,10 @@ import type {
   MovieQuery,
   MovieSearch,
 } from "../../types/imbd-data";
-import Pusher from "pusher";
+import { pusherSever, channels } from "../../utils/pusherStore";
 import { Movie, User } from "@prisma/client";
 
-const pusher = new Pusher({
-  appId: "1524050",
-  key: "a180f97e989a0566ac2f",
-  secret: "37fdb663607d04957599",
-  cluster: "us2",
-  useTLS: true,
-});
-
-const mainChan = "main-channel";
+const pusher = pusherSever();
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -187,7 +179,7 @@ export const MovieRouter = createRouter()
             },
           });
 
-          await pusher.trigger(mainChan, "added_to_wishlist", {
+          await pusher.trigger(channels.main, "added_to_wishlist", {
             movie: newMovie,
           });
           return newMovie;
@@ -218,7 +210,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
-        await pusher.trigger(mainChan, "removed_from_wishlist", {
+        await pusher.trigger(channels.main, "removed_from_wishlist", {
           msg: `Movie deleted from db`,
         });
         return { msg: `Movie deleted from db` };
@@ -246,7 +238,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: true },
         });
-        await pusher.trigger(mainChan, "made_available", makeAvailable);
+        await pusher.trigger(channels.main, "made_available", makeAvailable);
         return { msg: `${makeAvailable.Title} is now available for streaming` };
       } catch (err) {}
     },
@@ -270,7 +262,11 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: false },
         });
-        await pusher.trigger(mainChan, "made_unavailable", makeUnavailable);
+        await pusher.trigger(
+          channels.main,
+          "made_unavailable",
+          makeUnavailable
+        );
         return {
           msg: `${makeUnavailable.Title} is no longer available for streaming`,
         };
@@ -296,7 +292,7 @@ export const MovieRouter = createRouter()
           },
         });
 
-        await pusher.trigger(mainChan, "added_vote", movie);
+        await pusher.trigger(channels.main, "added_vote", movie);
         return { msg: `Vote counted!` };
       } catch (err) {
         if (err) console.error(err);
@@ -334,7 +330,7 @@ export const MovieRouter = createRouter()
             }
           }
 
-          await pusher.trigger(mainChan, "removed_vote", movie);
+          await pusher.trigger(channels.main, "removed_vote", movie);
           return { msg: `Vote removed!` };
         } catch (err) {
           if (err) console.error(err);
@@ -356,7 +352,7 @@ export const MovieRouter = createRouter()
             include: { addedBy: true },
           });
 
-          await pusher.trigger(mainChan, "we_have_a_winner", winner);
+          await pusher.trigger(channels.main, "we_have_a_winner", winner);
           return { msg: `Winner set!` };
         } catch (err) {
           if (err) console.error(err);
@@ -377,7 +373,7 @@ export const MovieRouter = createRouter()
           },
         });
 
-        await pusher.trigger(mainChan, "reset", { msg: `complete` });
+        await pusher.trigger(channels.main, "reset", { msg: `complete` });
         return { msg: `complete` };
       } catch (err) {
         if (err) console.error(err);
