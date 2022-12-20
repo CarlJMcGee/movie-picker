@@ -21,6 +21,7 @@ import { Alert } from "react-bootstrap";
 import pusherJs from "pusher-js";
 import { MovieQuery } from "../types/imbd-data";
 import { AnimatePresence } from "framer-motion";
+import { channels, pusherClient, useChannel } from "../utils/pusherStore";
 
 const Home: NextPage = () => {
   //state
@@ -46,50 +47,44 @@ const Home: NextPage = () => {
   picked = picked || [];
 
   // pusher websocket
-  useEffect(() => {
-    pusherJs.logToConsole = true;
-    const pusher = new pusherJs("a180f97e989a0566ac2f", {
-      cluster: "us2",
-      forceTLS: true,
-    });
-    const mainChan = pusher.subscribe("main-channel");
+  const { Bind, Subscription } = useChannel(channels.main);
+  // const mainChan = pusherClient.subscribe(channels.main);
 
-    mainChan.bind("added_to_wishlist", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    });
+  Bind("added_to_wishlist", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+  });
 
-    mainChan.bind("removed_from_wishlist", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-    });
+  Bind("removed_from_wishlist", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+  });
 
-    mainChan.bind("made_available", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-      utils.invalidateQueries(["movie.getAvailable"]);
-    });
+  Bind("made_available", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+    utils.invalidateQueries(["movie.getAvailable"]);
+  });
 
-    mainChan.bind("made_unavailable", () => {
-      utils.invalidateQueries(["movie.getUnavailable"]);
-      utils.invalidateQueries(["movie.getAvailable"]);
-    });
+  Bind("made_unavailable", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+    utils.invalidateQueries(["movie.getAvailable"]);
+  });
 
-    mainChan.bind("added_vote", () => {
-      utils.invalidateQueries(["movie.getPicked"]);
-    });
-    mainChan.bind("removed_vote", () => {
-      utils.invalidateQueries(["movie.getPicked"]);
-    });
+  Bind("added_vote", () => {
+    utils.invalidateQueries(["movie.getPicked"]);
+  });
+  Bind("removed_vote", () => {
+    utils.invalidateQueries(["movie.getPicked"]);
+  });
 
-    mainChan.bind("we_have_a_winner", (movie: MovieQuery) => {
-      setWinner(movie);
-      setShowWinner(true);
-    });
+  Bind<MovieQuery>("we_have_a_winner", (movie: MovieQuery) => {
+    setWinner(movie);
+    setShowWinner(true);
+  });
 
-    mainChan.bind("reset", () => {
-      utils.invalidateQueries(["movie.getWinner"]);
-      utils.invalidateQueries(["movie.getPicked"]);
-      setWinner(null);
-    });
-  }, []);
+  Bind("reset", () => {
+    utils.invalidateQueries(["movie.getWinner"]);
+    utils.invalidateQueries(["movie.getPicked"]);
+    setWinner(null);
+  });
 
   return (
     <div className="bg-blue-1">
