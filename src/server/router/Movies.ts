@@ -6,7 +6,7 @@ import type {
   MovieQuery,
   MovieSearch,
 } from "../../types/imbd-data";
-import { channels, pushTrigger } from "../../utils/pusherStore";
+import { pushTrigger } from "../../utils/pusherStore";
 import { Movie, User } from "@prisma/client";
 
 export const MovieRouter = createRouter()
@@ -177,7 +177,7 @@ export const MovieRouter = createRouter()
             },
           });
 
-          await pushTrigger(channels.main, "added_to_wishlist", {
+          await pushTrigger("main", "added_to_wishlist", {
             movie: newMovie,
           });
           return newMovie;
@@ -208,7 +208,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
         });
 
-        await pushTrigger(channels.main, "removed_from_wishlist", {
+        await pushTrigger("main", "removed_from_wishlist", {
           msg: `Movie deleted from db`,
         });
         return { msg: `Movie deleted from db` };
@@ -236,7 +236,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: true },
         });
-        await pushTrigger(channels.main, "made_available", makeAvailable);
+        await pushTrigger("main", "made_available", makeAvailable);
         return { msg: `${makeAvailable.Title} is now available for streaming` };
       } catch (err) {}
     },
@@ -260,7 +260,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: input.imdbId },
           data: { available: false },
         });
-        await pushTrigger(channels.main, "made_unavailable", makeUnavailable);
+        await pushTrigger("main", "made_unavailable", makeUnavailable);
         return {
           msg: `${makeUnavailable.Title} is no longer available for streaming`,
         };
@@ -286,7 +286,7 @@ export const MovieRouter = createRouter()
           },
         });
 
-        await pushTrigger(channels.main, "added_vote", movie);
+        await pushTrigger("main", "added_vote", movie);
         return { msg: `Vote counted!` };
       } catch (err) {
         if (err) console.error(err);
@@ -324,7 +324,7 @@ export const MovieRouter = createRouter()
             }
           }
 
-          await pushTrigger(channels.main, "removed_vote", movie);
+          await pushTrigger("main", "removed_vote", movie);
           return { msg: `Vote removed!` };
         } catch (err) {
           if (err) console.error(err);
@@ -346,7 +346,7 @@ export const MovieRouter = createRouter()
             include: { addedBy: true },
           });
 
-          await pushTrigger(channels.main, "we_have_a_winner", winner);
+          await pushTrigger("main", "we_have_a_winner", winner);
           return { msg: `Winner set!` };
         } catch (err) {
           if (err) console.error(err);
@@ -367,7 +367,7 @@ export const MovieRouter = createRouter()
           },
         });
 
-        await pushTrigger(channels.main, "reset", { msg: `complete` });
+        await pushTrigger("main", "reset", { msg: `complete` });
         return { msg: `complete` };
       } catch (err) {
         if (err) console.error(err);

@@ -16,12 +16,10 @@ import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert } from "react-bootstrap";
-import pusherJs from "pusher-js";
 import { MovieQuery } from "../types/imbd-data";
-import { AnimatePresence } from "framer-motion";
-import { channels, pusherClient, useChannel } from "../utils/pusherStore";
+import { useChannel } from "../utils/pusherStore";
 
 const Home: NextPage = () => {
   //state
@@ -47,40 +45,27 @@ const Home: NextPage = () => {
   picked = picked || [];
 
   // pusher websocket
-  const { Bind, Subscription } = useChannel(channels.main);
-  // const mainChan = pusherClient.subscribe(channels.main);
+  const { BindEvent, BindEvents } = useChannel("main");
 
-  Bind("added_to_wishlist", () => {
+  BindEvents(["added_to_wishlist", "removed_from_wishlist"], () => {
     utils.invalidateQueries(["movie.getUnavailable"]);
   });
 
-  Bind("removed_from_wishlist", () => {
-    utils.invalidateQueries(["movie.getUnavailable"]);
-  });
-
-  Bind("made_available", () => {
+  BindEvents(["made_available", "made_unavailable"], () => {
     utils.invalidateQueries(["movie.getUnavailable"]);
     utils.invalidateQueries(["movie.getAvailable"]);
   });
 
-  Bind("made_unavailable", () => {
-    utils.invalidateQueries(["movie.getUnavailable"]);
-    utils.invalidateQueries(["movie.getAvailable"]);
-  });
-
-  Bind("added_vote", () => {
-    utils.invalidateQueries(["movie.getPicked"]);
-  });
-  Bind("removed_vote", () => {
+  BindEvents(["added_vote", "removed_vote"], () => {
     utils.invalidateQueries(["movie.getPicked"]);
   });
 
-  Bind<MovieQuery>("we_have_a_winner", (movie: MovieQuery) => {
+  BindEvent<MovieQuery>("we_have_a_winner", (movie: MovieQuery) => {
     setWinner(movie);
     setShowWinner(true);
   });
 
-  Bind("reset", () => {
+  BindEvent("reset", () => {
     utils.invalidateQueries(["movie.getWinner"]);
     utils.invalidateQueries(["movie.getPicked"]);
     setWinner(null);
