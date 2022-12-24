@@ -11,7 +11,8 @@ type channelEvt =
   | "we_have_a_winner"
   | "reset";
 
-PusherClient.logToConsole = true;
+type channels = "main";
+
 export const pusherClient = new PusherClient("a180f97e989a0566ac2f", {
   cluster: "us2",
   forceTLS: true,
@@ -26,35 +27,47 @@ export const pusherSever = () =>
     useTLS: true,
   });
 
-export const channels = {
-  main: "main-channel",
-};
-
 export const useChannel = (
-  channel: string
+  channel: channels
 ): {
   Subscription: Channel;
-  Bind: <T = void>(event: string, callBack: (data: T) => any) => Channel;
+  BindEvent: <T = void>(event: string, callBack: (data: T) => any) => Channel;
+  BindEvents: <T = void>(
+    events: channelEvt[],
+    refetchFtn: (data: T) => any
+  ) => Channel[];
 } => {
   const Subscription = pusherClient.subscribe(channel);
-  function Bind<T = void>(event: string, callBack: (data: T) => any): Channel {
+
+  function BindEvent<T = void>(
+    event: string,
+    callBack: (data: T) => any
+  ): Channel {
     return Subscription.bind(event, callBack);
   }
-  return { Subscription, Bind };
+
+  function BindEvents<T = void>(
+    events: channelEvt[],
+    refetchFtn: (data: T) => any
+  ): Channel[] {
+    return events.map((e) => Subscription.bind(e, refetchFtn));
+  }
+
+  return { Subscription, BindEvent, BindEvents };
 };
 
 export async function pushTrigger<D = void>(
-  channel: string[],
+  channel: channels[],
   event: channelEvt,
   data: D
 ): Promise<PusherServer.Response>;
 export async function pushTrigger<D = void>(
-  channel: string,
+  channel: channels,
   event: channelEvt,
   data: D
 ): Promise<PusherServer.Response>;
 export async function pushTrigger<D = void>(
-  channel: string | string[],
+  channel: channels | channels[],
   event: channelEvt,
   data: D
 ): Promise<PusherServer.Response> {
