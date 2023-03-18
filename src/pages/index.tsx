@@ -56,6 +56,10 @@ const Home: NextPage = () => {
     utils.invalidateQueries(["movie.getAvailable"]);
   });
 
+  BindEvent("made_unavailable", () => {
+    utils.invalidateQueries(["movie.getUnavailable"]);
+  });
+
   BindEvents(["added_vote", "removed_vote"], () => {
     utils.invalidateQueries(["movie.getPicked"]);
   });
