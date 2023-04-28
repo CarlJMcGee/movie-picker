@@ -1,7 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { createRouter } from "./context";
 import { z } from "zod";
-import { Movie, User } from "@prisma/client";
+import {
+  Account,
+  Movie,
+  Session,
+  User,
+  VerificationToken,
+} from "@prisma/client";
 
 export const DbRouter = createRouter()
   .mutation("export", {
@@ -38,9 +44,9 @@ export const DbRouter = createRouter()
     input: z.object({
       users: z.custom<User>().array(),
       movies: z.custom<Movie>().array(),
-      account: z.custom<User>().array(),
-      sessions: z.custom<User>().array(),
-      verificationTokens: z.custom<User>().array(),
+      account: z.custom<Account>().array(),
+      sessions: z.custom<Session>().array(),
+      verificationTokens: z.custom<VerificationToken>().array(),
     }),
     async resolve({ ctx, input }) {
       if (ctx.session?.user?.name !== "Kurojin Karu") {
@@ -51,8 +57,97 @@ export const DbRouter = createRouter()
       }
       try {
         console.log(input.users[0]);
+
+        Object.entries(input).forEach(async ([key, value]) => {
+          switch (key) {
+            case "users":
+              await addUsers(value as User[]);
+              break;
+            case "movies":
+              await addMovies(value as Movie[]);
+              break;
+            case "account":
+              await addAccount(value as Account[]);
+              break;
+            case "sessions":
+              await addSessions(value as Session[]);
+              break;
+            case "verificationTokens":
+              await addVerificationTokens(value as VerificationToken[]);
+              break;
+          }
+
+          async function addUsers(users: User[]) {
+            users.forEach(async (user) => {
+              await ctx.prisma.user.upsert({
+                where: {
+                  id: user.id,
+                },
+                create: user,
+                update: {},
+              });
+            });
+          }
+
+          async function addMovies(movies: Movie[]) {
+            movies.forEach(async (movie) => {
+              await ctx.prisma.movie.upsert({
+                where: {
+                  id: movie.id,
+                },
+                create: movie,
+                update: {},
+              });
+            });
+          }
+
+          async function addAccount(account: Account[]) {
+            account.forEach(async (acc) => {
+              await ctx.prisma.account.upsert({
+                where: {
+                  id: acc.id,
+                },
+                create: acc,
+                update: {},
+              });
+            });
+          }
+
+          async function addSessions(sessions: Session[]) {
+            sessions.forEach(async (session) => {
+              await ctx.prisma.session.upsert({
+                where: {
+                  id: session.id,
+                },
+                create: session,
+                update: {},
+              });
+            });
+          }
+
+          async function addVerificationTokens(
+            verificationTokens: VerificationToken[]
+          ) {
+            verificationTokens.forEach(async (token) => {
+              await ctx.prisma.verificationToken.upsert({
+                where: {
+                  token: token.token,
+                },
+                create: token,
+                update: {},
+              });
+            });
+          }
+        });
+
+        return { status: "success", code: 200 };
       } catch (err) {
-        if (err) console.error(err);
+        if (err) {
+          return new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `${err}`,
+          });
+        }
       }
     },
   });

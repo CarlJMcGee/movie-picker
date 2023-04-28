@@ -2,16 +2,20 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 import { trpc } from "../utils/trpc";
+import { TRPCError } from "@trpc/server";
 
 const DbConfig = () => {
   const { data: sess } = useSession();
-  const { mutateAsync: fetchDbData } = trpc.useMutation("db.export");
+  const { mutateAsync: fetchDbData, data: DBdata } =
+    trpc.useMutation("db.export");
   const {
     mutateAsync: importDbData,
     data,
     isLoading: isUploading,
   } = trpc.useMutation("db.import");
   const [file, setFile] = React.useState<string | null>(null);
+  const [newData, setNewData] =
+    React.useState<Exclude<typeof DBdata, TRPCError>>(undefined);
 
   if (sess?.user?.name !== "Kurojin Karu") {
     return (
@@ -44,7 +48,7 @@ const DbConfig = () => {
     if (!file) return;
     const data = await file.text();
     const json = JSON.parse(data);
-    console.log(json);
+    setNewData(json);
   };
 
   return (
@@ -68,13 +72,18 @@ const DbConfig = () => {
         <br />
       )}
       <br />
-      <br />
       <h1 className="m-3">Import Database</h1>
-      <input
-        type="file"
-        className=" m-3 px-2 py-1 bg-blue-400 rounded-md"
-        onChange={fileUpload}
-      />
+      <input type="file" className=" m-3 px-2 py-1" onChange={fileUpload} />
+      {newData ? (
+        <button
+          onClick={() => importDbData(newData)}
+          className={`m-3 px-2 py-1 ${
+            isUploading ? "bg-yellow-400" : "bg-green-400"
+          } rounded-md`}
+        >
+          Upload
+        </button>
+      ) : null}
     </div>
   );
 };
