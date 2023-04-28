@@ -6,13 +6,15 @@ import { ImdbRouter } from "./imdb";
 import { MovieRouter } from "./Movies";
 import { SeedRouter } from "./seeds";
 import { UserRouter } from "./User";
+import { DbRouter } from "./db";
 
 export const appRouter = createRouter()
   .transformer(superjson)
   .merge("imdb.", ImdbRouter)
   .merge("user.", UserRouter)
   .merge("movie.", MovieRouter)
-  .merge("seed.", SeedRouter);
+  .merge("seed.", SeedRouter)
+  .merge("db.", DbRouter);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
