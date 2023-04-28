@@ -21,7 +21,8 @@
     "next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "**/*.js"
+    "**/*.js",
+    "src/seeds/export-data.ts"
   ],
   "exclude": ["node_modules"]
 }

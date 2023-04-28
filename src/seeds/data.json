@@ -1,0 +1,16 @@
+[
+  {
+    "name": "test",
+    "description": "test",
+    "price": 0,
+    "image": "test",
+    "category": "test"
+  },
+  {
+    "name": "test2",
+    "description": "test2",
+    "price": 0,
+    "image": "test2",
+    "category": "test2"
+  }
+]

@@ -50,7 +50,7 @@ export default function UserDropdownMenu({
         <Dropdown.Toggle id="userDropdown" className="bg-blue-4 my-5 flex">
           <Image
             src={image}
-            alt="user profile picture"
+            alt="user pfp"
             thumbnail={false}
             className="w-8 mr-2"
             onDoubleClick={() => setShowAdmin(true)}
