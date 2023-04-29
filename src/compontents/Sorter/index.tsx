@@ -96,7 +96,6 @@ const Sorter = ({ movies, setMovies }: SorterProps) => {
       }}
     >
       <NativeSelect
-        label="Sort By"
         value={sortCat}
         data={["Name", "Score", "Release Date", "Length"]}
         size={"xs"}
@@ -106,7 +105,7 @@ const Sorter = ({ movies, setMovies }: SorterProps) => {
       <SegmentedControl
         value={sortDir}
         data={["Ascending", "Descending"]}
-        className="h-1/2 my-2 ml-2 bg-transparent"
+        className="h-1/2 my-1 ml-2 bg-transparent"
         onChange={(value) => setSortDir(value as SortDirections)}
       />
     </motion.div>
