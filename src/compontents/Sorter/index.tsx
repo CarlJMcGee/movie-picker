@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import { SortCategories, SortDirections } from "../../types/movies";
 import { MovieQuery } from "../../types/imbd-data";
 import { motion } from "framer-motion";
+import { SetStateAction } from "jotai";
 
 interface SorterProps {
   movies: MovieQuery[] | undefined;
-  setMovies: React.Dispatch<React.SetStateAction<MovieQuery[] | undefined>>;
+  // @ts-expect-error
+  setMovies: SetAtom<[SetStateAction<MovieQuery[]>], void>;
 }
 
 const Sorter = ({ movies, setMovies }: SorterProps) => {

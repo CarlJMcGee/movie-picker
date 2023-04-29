@@ -8,20 +8,19 @@ import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
 import { AnimatePresence, motion } from "framer-motion";
-
-type Col = "wish-list" | "available" | "picked" | "winner";
+import type { Col } from "../types/movies";
+import { useAtom } from "jotai";
+import { sessionAtom } from "../utils/stateStore";
 
 export interface IMovieCardProps {
   movie: MovieQuery | undefined;
   col: Col;
-  session: Session | null;
 }
 
-export default function MovieInfoCard({
-  movie,
-  col,
-  session,
-}: IMovieCardProps) {
+export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
+  // store
+  const [session] = useAtom(sessionAtom);
+
   // queries
   const { data: userData } = trpc.useQuery(["user.me"]);
 

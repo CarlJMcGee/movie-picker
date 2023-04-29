@@ -235,6 +235,9 @@ export const MovieRouter = createRouter()
         const makeAvailable = await ctx.prisma.movie.update({
           where: { imdbID: input.imdbId },
           data: { available: true },
+          include: {
+            addedBy: true,
+          },
         });
         await pushTrigger("main", "made_available", makeAvailable);
         return { msg: `${makeAvailable.Title} is now available for streaming` };
@@ -259,6 +262,9 @@ export const MovieRouter = createRouter()
         const makeUnavailable = await ctx.prisma.movie.update({
           where: { imdbID: input.imdbId },
           data: { available: false },
+          include: {
+            addedBy: true,
+          },
         });
         await pushTrigger("main", "made_unavailable", makeUnavailable);
         return {
