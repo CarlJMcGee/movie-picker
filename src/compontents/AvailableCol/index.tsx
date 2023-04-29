@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { Session } from "next-auth";
 
 // bootstrap
@@ -8,6 +8,7 @@ import Accordion from "react-bootstrap/Accordion";
 import MovieInfoCard from "../MovieInfoCard";
 import { MovieQuery } from "../../types/imbd-data";
 import { AnimatePresence, motion } from "framer-motion";
+import Sorter from "../Sorter";
 
 export interface IAvailableColProps {
   available: MovieQuery[] | undefined;
@@ -18,6 +19,12 @@ export default function AvailableCol({
   available,
   session,
 }: IAvailableColProps) {
+  const [movies, setMovies] = useState(available);
+
+  useEffect(() => {
+    setMovies(available);
+  }, [available]);
+
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
       <motion.h3
@@ -38,10 +45,11 @@ export default function AvailableCol({
       >
         Choose Your Movie
       </motion.h3>
+      <Sorter movies={movies} setMovies={setMovies} />
       <Accordion>
         <AnimatePresence>
-          {Array.isArray(available) &&
-            available.map((movie) => (
+          {Array.isArray(movies) &&
+            movies.map((movie) => (
               <MovieInfoCard
                 movie={movie}
                 col="available"

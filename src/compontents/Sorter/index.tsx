@@ -1,26 +1,18 @@
 import { NativeSelect, SegmentedControl } from "@mantine/core";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SortCategories, SortDirections } from "../../types/movies";
-import { Movie } from "@prisma/client";
 import { MovieQuery } from "../../types/imbd-data";
+import { motion } from "framer-motion";
 
 interface SorterProps {
   movies: MovieQuery[] | undefined;
   setMovies: React.Dispatch<React.SetStateAction<MovieQuery[] | undefined>>;
-  sortCat: SortCategories;
-  sortDir: SortDirections;
-  setSortCat: React.Dispatch<React.SetStateAction<SortCategories>>;
-  setSortDir: React.Dispatch<React.SetStateAction<SortDirections>>;
 }
 
-const Sorter = ({
-  sortCat,
-  sortDir,
-  setSortCat,
-  setSortDir,
-  movies,
-  setMovies,
-}: SorterProps) => {
+const Sorter = ({ movies, setMovies }: SorterProps) => {
+  const [sortCat, setSortCat] = useState<SortCategories>("Name");
+  const [sortDir, setSortDir] = useState<SortDirections>("Ascending");
+
   useEffect(() => {
     if (!Array.isArray(movies)) {
       return;
@@ -81,7 +73,26 @@ const Sorter = ({
   }, [sortCat, sortDir]);
 
   return (
-    <div className="flex items-end">
+    <motion.div
+      className="flex items-end"
+      initial={{
+        opacity: 0,
+        x: -100,
+      }}
+      animate={{
+        opacity: 100,
+        x: 0,
+      }}
+      exit={{
+        opacity: 0,
+        x: 100,
+      }}
+      transition={{
+        type: "tween",
+        duration: 0.7,
+        // delay: delayMap.get(col),
+      }}
+    >
       <NativeSelect
         label="Sort By"
         value={sortCat}
@@ -96,7 +107,7 @@ const Sorter = ({
         className="h-1/2 my-2 ml-2 bg-transparent"
         onChange={(value) => setSortDir(value as SortDirections)}
       />
-    </div>
+    </motion.div>
   );
 };
 

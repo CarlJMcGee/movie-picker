@@ -31,7 +31,9 @@ export const UserRouter = createRouter()
             data: { role: "admin" },
           });
           return `User ${user.name} is now role ${user.role}`;
-        } catch (err) {}
+        } catch (err) {
+          if (err) console.error(err);
+        }
       }
     },
   });
