@@ -18,25 +18,20 @@ import MovieInfoCard from "../MovieInfoCard";
 import { AnimatePresence, motion } from "framer-motion";
 
 import type { MovieQuery } from "../../types/imbd-data";
-import type { SortCategories, SortDirections } from "../../types/movies";
 import Sorter from "../Sorter";
+import { sessionAtom, unavailableAtom } from "../../utils/stateStore";
+import { useAtom } from "jotai";
 
-export interface IWishListProps {
-  unavailable: MovieQuery[] | undefined;
-  session: Session | null;
-}
+export interface IWishListProps {}
 
-export default function WishList({ unavailable, session }: IWishListProps) {
+export default function WishList() {
   // state
+  const [session] = useAtom(sessionAtom);
   const [showAddModal, setAddModal] = useState(false);
-  const [movies, setMovies] = useState(unavailable);
+  const [movies, setMovies] = useAtom(unavailableAtom);
   const [movieTitle, setTitle] = useState("");
   // mutations
-  const addMovie = trpc.useMutation(["movie.add"], {
-    // onSuccess() {
-    //   utils.invalidateQueries(["movie.getUnavailable"]);
-    // },
-  });
+  const addMovie = trpc.useMutation(["movie.add"]);
   const { mutateAsync: search, data: searchRes } = trpc.useMutation([
     "movie.autoComplete",
   ]);
@@ -49,10 +44,6 @@ export default function WishList({ unavailable, session }: IWishListProps) {
     setTitle("");
     setAddModal(false);
   };
-
-  useEffect(() => {
-    setMovies(unavailable);
-  }, [unavailable]);
 
   useEffect(() => {
     if (movieTitle === "") {
@@ -145,12 +136,7 @@ export default function WishList({ unavailable, session }: IWishListProps) {
         <AnimatePresence>
           {Array.isArray(movies) &&
             movies.map((movie) => (
-              <MovieInfoCard
-                movie={movie}
-                col="wish-list"
-                session={session}
-                key={movie.imdbID}
-              />
+              <MovieInfoCard movie={movie} col="wish-list" key={movie.imdbID} />
             ))}
         </AnimatePresence>
       </Accordion>

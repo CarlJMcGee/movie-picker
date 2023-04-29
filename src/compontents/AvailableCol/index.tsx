@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Session } from "next-auth";
 
 // bootstrap
@@ -9,21 +8,13 @@ import MovieInfoCard from "../MovieInfoCard";
 import { MovieQuery } from "../../types/imbd-data";
 import { AnimatePresence, motion } from "framer-motion";
 import Sorter from "../Sorter";
+import { availableAtom } from "../../utils/stateStore";
+import { useAtom } from "jotai";
 
-export interface IAvailableColProps {
-  available: MovieQuery[] | undefined;
-  session: Session | null;
-}
+export interface IAvailableColProps {}
 
-export default function AvailableCol({
-  available,
-  session,
-}: IAvailableColProps) {
-  const [movies, setMovies] = useState(available);
-
-  useEffect(() => {
-    setMovies(available);
-  }, [available]);
+export default function AvailableCol() {
+  const [movies, setMovies] = useAtom(availableAtom);
 
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
@@ -50,12 +41,7 @@ export default function AvailableCol({
         <AnimatePresence>
           {Array.isArray(movies) &&
             movies.map((movie) => (
-              <MovieInfoCard
-                movie={movie}
-                col="available"
-                session={session}
-                key={movie.imdbID}
-              />
+              <MovieInfoCard movie={movie} col="available" key={movie.imdbID} />
             ))}
         </AnimatePresence>
       </Accordion>

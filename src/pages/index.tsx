@@ -16,33 +16,61 @@ import FinalsCol from "../compontents/FinalsCol";
 import AvailableCol from "../compontents/AvailableCol";
 import WishList from "../compontents/WishList";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 import { MovieQuery } from "../types/imbd-data";
 import { useChannel } from "../utils/pusherStore";
+import {
+  availableAtom,
+  pickedAtom,
+  sessionAtom,
+  unavailableAtom,
+  winnerAtom,
+} from "../utils/stateStore";
+import { useAtom } from "jotai";
 
 const Home: NextPage = () => {
   //state
-  const [winner, setWinner] = useState<MovieQuery | null>(null);
   const [showWinner, setShowWinner] = useState(false);
+
+  //store
+  const [session, setSession] = useAtom(sessionAtom);
+  const [unavailable, setUnavailable] = useAtom(unavailableAtom);
+  const [available, setAvailable] = useAtom(availableAtom);
+  const [picked, setPicked] = useAtom(pickedAtom);
+  const [winner, setWinner] = useAtom(winnerAtom);
 
   const utils = trpc.useContext();
 
   // queries
-  const { data: session } = useSession();
-  let { data: unavailable, isLoading: gettingUnavailable } = trpc.useQuery([
-    "movie.getUnavailable",
-  ]);
-  let { data: available, isLoading: gettingAvailble } = trpc.useQuery([
-    "movie.getAvailable",
-  ]);
-  let { data: picked, isLoading: gettingPicked } = trpc.useQuery([
-    "movie.getPicked",
-  ]);
-
-  unavailable = unavailable || [];
-  available = available || [];
-  picked = picked || [];
+  const { data: sessionRaw } = useSession();
+  let { isLoading: gettingUnavailable } = trpc.useQuery(
+    ["movie.getUnavailable"],
+    {
+      onSuccess(data) {
+        if (!data) {
+          return;
+        }
+        setUnavailable(data);
+      },
+    }
+  );
+  let { isLoading: gettingAvailble } = trpc.useQuery(["movie.getAvailable"], {
+    onSuccess(data) {
+      if (!data) {
+        return;
+      }
+      setAvailable(data);
+    },
+  });
+  let { isLoading: gettingPicked } = trpc.useQuery(["movie.getPicked"], {
+    onSuccess(data) {
+      if (!data) {
+        return;
+      }
+      setPicked(data);
+    },
+  });
 
   // pusher websocket
   const { BindEvent, BindEvents } = useChannel("main");
@@ -56,7 +84,7 @@ const Home: NextPage = () => {
     utils.invalidateQueries(["movie.getAvailable"]);
   });
 
-  BindEvent("made_unavailable", () => {
+  BindEvent<MovieQuery>("made_unavailable", (movie) => {
     utils.invalidateQueries(["movie.getUnavailable"]);
   });
 
@@ -74,6 +102,13 @@ const Home: NextPage = () => {
     utils.invalidateQueries(["movie.getPicked"]);
     setWinner(null);
   });
+
+  useEffect(() => {
+    if (!sessionRaw) {
+      return;
+    }
+    setSession(sessionRaw);
+  }, [sessionRaw]);
 
   return (
     <div className="bg-blue-1">
@@ -119,23 +154,18 @@ const Home: NextPage = () => {
             <Row>
               <Col className="" sm={true} lg={true}>
                 {picked?.length > 0 ? (
-                  <FinalsCol
-                    picked={picked}
-                    session={session}
-                    winner={winner}
-                    showWinner={setShowWinner}
-                  />
+                  <FinalsCol showWinner={setShowWinner} />
                 ) : (
                   ""
                 )}{" "}
               </Col>
 
               <Col className="" sm={true} lg={true}>
-                <AvailableCol available={available} session={session} />
+                <AvailableCol />
               </Col>
 
               <Col className="" sm={true} lg={true}>
-                <WishList unavailable={unavailable} session={session} />
+                <WishList />
               </Col>
             </Row>
           </Container>

@@ -13,24 +13,21 @@ import MovieInfoCard from "../MovieInfoCard";
 // utils
 import { numBetween } from "@carljmcgee/lol-random";
 import { trpc } from "../../utils/trpc";
-import { MovieQuery } from "../../types/imbd-data";
 
 // framer motion
 import { motion, AnimatePresence } from "framer-motion";
 
+import { pickedAtom, winnerAtom } from "../../utils/stateStore";
+import { useAtom } from "jotai";
+
 export interface IFinalsColProps {
-  picked: MovieQuery[];
-  session: Session | null;
-  winner: Movie | null | undefined;
   showWinner: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function FinalsCol({
-  picked,
-  session,
-  winner,
-  showWinner,
-}: IFinalsColProps) {
+export default function FinalsCol({ showWinner }: IFinalsColProps) {
+  const [picked] = useAtom(pickedAtom);
+  const [winner] = useAtom(winnerAtom);
+
   const NewWinner = trpc.useMutation("movie.setWinner");
   const reset = trpc.useMutation(["movie.reset"]);
 
@@ -89,12 +86,7 @@ export default function FinalsCol({
         <AnimatePresence>
           {Array.isArray(picked) &&
             picked.map((movie) => (
-              <MovieInfoCard
-                movie={movie}
-                col="picked"
-                session={session}
-                key={movie.imdbID}
-              />
+              <MovieInfoCard movie={movie} col="picked" key={movie.imdbID} />
             ))}
         </AnimatePresence>
       </Accordion>
