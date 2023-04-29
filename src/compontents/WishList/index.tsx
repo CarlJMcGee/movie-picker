@@ -11,7 +11,7 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 
 // mantine
-import { Autocomplete, NativeSelect, SegmentedControl } from "@mantine/core";
+import { Autocomplete } from "@mantine/core";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
@@ -31,9 +31,6 @@ export default function WishList({ unavailable, session }: IWishListProps) {
   const [showAddModal, setAddModal] = useState(false);
   const [movies, setMovies] = useState(unavailable);
   const [movieTitle, setTitle] = useState("");
-  const [sortCat, setSortCat] = useState<SortCategories>("Name");
-  const [sortDir, setSortDir] = useState<SortDirections>("Ascending");
-
   // mutations
   const addMovie = trpc.useMutation(["movie.add"], {
     // onSuccess() {
@@ -143,14 +140,7 @@ export default function WishList({ unavailable, session }: IWishListProps) {
           </Modal>
         </>
       )}
-      <Sorter
-        movies={movies}
-        sortCat={sortCat}
-        sortDir={sortDir}
-        setMovies={setMovies}
-        setSortCat={setSortCat}
-        setSortDir={setSortDir}
-      />
+      <Sorter movies={movies} setMovies={setMovies} />
       <Accordion>
         <AnimatePresence>
           {Array.isArray(movies) &&
