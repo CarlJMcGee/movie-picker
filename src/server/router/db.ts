@@ -56,8 +56,6 @@ export const DbRouter = createRouter()
         });
       }
       try {
-        console.log(input.users[0]);
-
         Object.entries(input).forEach(async ([key, value]) => {
           switch (key) {
             case "users":
@@ -81,10 +79,12 @@ export const DbRouter = createRouter()
             users.forEach(async (user) => {
               await ctx.prisma.user.upsert({
                 where: {
-                  id: user.id,
+                  email: user.email ?? "",
                 },
                 create: user,
-                update: {},
+                update: {
+                  id: user.id,
+                },
               });
             });
           }
