@@ -28,6 +28,7 @@ import {
   winnerAtom,
 } from "../utils/stateStore";
 import { useAtom } from "jotai";
+import CoolCatButton from "../compontents/CoolCatButton";
 
 const Home: NextPage = () => {
   //state
@@ -120,6 +121,7 @@ const Home: NextPage = () => {
       <header className="container flex justify-between">
         <Header session={session} />
       </header>
+      <CoolCatButton />
       {gettingAvailble || gettingUnavailable || gettingPicked ? (
         <h2 className="text-center text-4xl">
           Loading <Spinner animation="border" />{" "}

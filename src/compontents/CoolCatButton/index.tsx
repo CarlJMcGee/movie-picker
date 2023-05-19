@@ -1,34 +1,34 @@
-import {useState} from "react"
-// TODO: screen-cap cool cat img
+import { useState } from "react";
+import Image from "next/image";
+import coolcatjpg from "./assets/cool cat head.png";
+import { trpc } from "../../utils/trpc";
 
 export default function CoolCatButton() {
-    const [quote, setQuote] = useState<string | undefined>(undefined)
-    
-    /* TODO:
-    const aiCofig = new Configuration({
-        apiKey: process.env.OPEN_AI_KEY
-    })
+  const [quote, setQuote] = useState<string | undefined>(undefined);
+  const { mutateAsync: askCoolCat, isLoading: coolCatThinking } =
+    trpc.useMutation("ai.cool-cat-quote");
 
-    const ai = newOpenAIApi(aiConfig)
-    */
-    const fetchQuote = async () => {
-        /* TODO:
-        const res = await ai.createCompletion({
-            model: "text-davinci-003",
-            prompt: <prompt>,
-            tempurature: 0.4,
-            max_tokens: 350
-        })
-        setQuote(res.data.choices[0].text)
-        */
+  const fetchQuote = async () => {
+    const quotes = await askCoolCat();
+
+    if (!quotes) {
+      return;
     }
-    
-    return (
-        <div className="flex justify-center">
-            {quote ? <p className="bg-white px-3 py-2 rounded-md">{quote}</p> : null}
-            <button onClick={()=> fetchQuote()}>
-                <Image src={coolcatjpg} width={250}/>
-            </button>
-        </div>
-    )
+
+    setQuote(quotes[0]?.text);
+  };
+
+  return (
+    <div className="flex justify-start mx-3 gap-4 items-start">
+      <button
+        onClick={() => fetchQuote()}
+        className={`hover:scale-90 ${coolCatThinking ? "animate-pulse" : ""}`}
+      >
+        <Image src={coolcatjpg} alt="cool cat head" width={100} height={100} />
+      </button>
+      {quote ? (
+        <p className="bg-white px-3 py-2 rounded-md rounded-bl-none">{quote}</p>
+      ) : null}
+    </div>
+  );
 }
