@@ -27,16 +27,7 @@ export const pusherSever = () =>
     useTLS: true,
   });
 
-export const useChannel = (
-  channel: channels
-): {
-  Subscription: Channel;
-  BindEvent: <T = void>(event: string, callBack: (data: T) => any) => Channel;
-  BindEvents: <T = void>(
-    events: channelEvt[],
-    refetchFtn: (data: T) => any
-  ) => Channel[];
-} => {
+export const useChannel = (channel: channels) => {
   const Subscription = pusherClient.subscribe(channel);
 
   function BindEvent<T = void>(
