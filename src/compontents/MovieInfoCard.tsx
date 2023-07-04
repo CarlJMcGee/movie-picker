@@ -4,10 +4,9 @@ import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import type { MovieQuery } from "../types/imbd-data";
-import { Session } from "next-auth";
 import { trpc } from "../utils/trpc";
 import Badge from "react-bootstrap/Badge";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { Col } from "../types/movies";
 import { useAtom } from "jotai";
 import { sessionAtom } from "../utils/stateStore";
@@ -23,6 +22,10 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
 
   // queries
   const { data: userData } = trpc.useQuery(["user.me"]);
+  const { data: movieRecommendations } = trpc.useQuery([
+    "ai.get-movie-recommendations",
+    { movie: movie?.Title ?? "" },
+  ]);
 
   // mutations
   const makeAvailable = trpc.useMutation(["movie.makeAvailable"]);
@@ -180,6 +183,24 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
                 >
                   Remove Vote
                 </Button>
+              )}
+              {col === "available" && (
+                <div>
+                  <h3 className="text-center text-xl font-semibold underline">
+                    If you hated{" "}
+                    <span className="text-2xl font-bold">{movie?.Title}</span>,
+                    then you'll hate these too:
+                  </h3>
+                  <ul>
+                    {movieRecommendations
+                      ? movieRecommendations?.recommendations.map((movie) => (
+                          <li key={movie} className="text-lg text-center">
+                            {movie}
+                          </li>
+                        ))
+                      : null}
+                  </ul>
+                </div>
               )}
             </Card.Body>
           </Card>

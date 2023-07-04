@@ -1,11 +1,8 @@
-import { Session } from "next-auth";
-
 // bootstrap
 import Accordion from "react-bootstrap/Accordion";
 
 // custom components
 import MovieInfoCard from "../MovieInfoCard";
-import { MovieQuery } from "../../types/imbd-data";
 import { AnimatePresence, motion } from "framer-motion";
 import Sorter from "../Sorter";
 import { availableAtom } from "../../utils/stateStore";

@@ -14,5 +14,5 @@
       "password": "z@ai5GzE#Jv7"
     }
   ],
-  "dotenv.enableAutocloaking": true
+  "dotenv.enableAutocloaking": false
 }

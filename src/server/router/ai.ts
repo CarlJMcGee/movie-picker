@@ -1,14 +1,17 @@
 import { Configuration, OpenAIApi } from "openai";
 import { createRouter } from "./context";
+import { z } from "zod";
+import { movieRecommendations } from "../../types/movies";
 
-export const AiRouter = createRouter().mutation("cool-cat-quote", {
-  async resolve() {
-    const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
-    const openai = new OpenAIApi(aiConfig);
-    try {
-      const res = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: `You are Cool Cat from the direct to DVD movies Cool Cat Saves the Kids, Cool Cat Kids Superhero, and Cool Cat Fights Corona Virus. Here are a few quotes from Cool Cat:
+export const AiRouter = createRouter()
+  .mutation("cool-cat-quote", {
+    async resolve() {
+      const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
+      const openai = new OpenAIApi(aiConfig);
+      try {
+        const res = await openai.createCompletion({
+          model: "text-davinci-003",
+          prompt: `You are Cool Cat from the direct to DVD movies Cool Cat Saves the Kids, Cool Cat Kids Superhero, and Cool Cat Fights Corona Virus. Here are a few quotes from Cool Cat:
        "He's about to graffiti our neighbor's wall, and it's not cool to... paint on someone's wall!"
        "You did so awesome on that Van Halen guitar! "
        "Wow!"
@@ -22,20 +25,60 @@ export const AiRouter = createRouter().mutation("cool-cat-quote", {
        "I'm cool cat and I'm going to save the kids!"
        
        Say something that Cool Cat might say. Start each response with "I'm Cool Cat".`,
-        temperature: 0.4,
-        max_tokens: 350,
-      });
+          temperature: 0.4,
+          max_tokens: 350,
+        });
 
-      if (!res.data.choices) {
-        return undefined;
-      }
+        if (!res.data.choices) {
+          return undefined;
+        }
 
-      return res.data.choices;
-    } catch (error) {
-      if (error) {
-        console.log(error);
-        return undefined;
+        return res.data.choices;
+      } catch (error) {
+        if (error) {
+          console.log(error);
+          return undefined;
+        }
       }
-    }
-  },
-});
+    },
+  })
+  .query("get-movie-recommendations", {
+    input: z.object({
+      movie: z.string(),
+    }),
+    async resolve({ input: { movie } }) {
+      const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
+      const openai = new OpenAIApi(aiConfig);
+      try {
+        const res = await openai.createCompletion({
+          model: "text-davinci-003",
+          prompt: `Based on the movie ${movie} what three other similar movies would I like from the same genre?
+          Return movies data in the following string format:
+          <original movie title>|<recommended movie title>,<recommended movie title>,<recommended movie title>, etc...`,
+          temperature: 0.4,
+          max_tokens: 350,
+          n: 1,
+        });
+
+        if (!res.data.choices) {
+          return undefined;
+        }
+        if (!res.data.choices[0]?.text) {
+          return undefined;
+        }
+
+        const movieRaw = res.data.choices[0].text.split("|");
+        const movieRecommendations: movieRecommendations = {
+          movie: movieRaw[0]!.trim(),
+          recommendations: movieRaw[1]!.split(","),
+        };
+
+        return movieRecommendations;
+      } catch (error) {
+        if (error) {
+          console.log(error);
+          return undefined;
+        }
+      }
+    },
+  });
