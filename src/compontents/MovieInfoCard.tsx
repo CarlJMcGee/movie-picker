@@ -189,7 +189,7 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
                   <h3 className="text-center text-xl font-semibold underline">
                     If you hated{" "}
                     <span className="text-2xl font-bold">{movie?.Title}</span>,
-                    then you'll hate these too:
+                    then you&#39;ll hate these too:
                   </h3>
                   <ul>
                     {movieRecommendations
