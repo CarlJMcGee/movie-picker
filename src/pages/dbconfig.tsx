@@ -1,11 +1,10 @@
-import { useSession } from "next-auth/react";
-import Link from "next/link";
 import React from "react";
+import Link from "next/link";
 import { trpc } from "../utils/trpc";
 import { TRPCError } from "@trpc/server";
 
 const DbConfig = () => {
-  const { data: sess } = useSession();
+  const { data: user } = trpc.useQuery(["user.me"]);
   const { mutateAsync: fetchDbData, data: DBdata } =
     trpc.useMutation("db.export");
   const {
@@ -17,7 +16,7 @@ const DbConfig = () => {
   const [newData, setNewData] =
     React.useState<Exclude<typeof DBdata, TRPCError>>(undefined);
 
-  if (sess?.user?.name !== "Kurojin Karu") {
+  if (user?.role !== "admin") {
     return (
       <>
         <h1>Not Authorized</h1>

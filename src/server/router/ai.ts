@@ -51,11 +51,6 @@ export const AiRouter = createRouter()
           available: true,
         },
       });
-      const movies = moviesRaw
-        .map((movie) => {
-          return movie.Title;
-        })
-        .join(", ");
 
       const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
       const openai = new OpenAIApi(aiConfig);
@@ -75,7 +70,11 @@ export const AiRouter = createRouter()
        "But why does Momma Cat and Vivica go to the Beauty parlor? They are already so beautiful."
        "I'm cool cat and I'm going to save the kids!"
        
-       Here are a list of movies available: ${movies}. Please have Cool Cat give a unique movie recommendation from the list provided.`,
+       Here are a list of movies available: 
+       
+       ${JSON.stringify(moviesRaw)}
+       
+       Please have Cool Cat give a movie recommendation from the list provided.`,
           temperature: 0.4,
           max_tokens: 350,
         });

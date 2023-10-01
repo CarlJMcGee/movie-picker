@@ -12,7 +12,13 @@ import {
 export const DbRouter = createRouter()
   .mutation("export", {
     async resolve({ ctx }) {
-      if (ctx.session?.user?.name !== "Kurojin Karu") {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session?.user?.id,
+        },
+      });
+
+      if (user?.role !== "admin") {
         return new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to export the database",
@@ -49,7 +55,13 @@ export const DbRouter = createRouter()
       verificationTokens: z.custom<VerificationToken>().array(),
     }),
     async resolve({ ctx, input }) {
-      if (ctx.session?.user?.name !== "Kurojin Karu") {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session?.user?.id,
+        },
+      });
+
+      if (user?.role !== "admin") {
         return new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not authorized to import the database",

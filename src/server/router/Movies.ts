@@ -8,6 +8,7 @@ import type {
 } from "../../types/imbd-data";
 import { pushTrigger } from "../../utils/pusherStore";
 import { Movie, User } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const MovieRouter = createRouter()
   .query("findOne", {
@@ -123,67 +124,75 @@ export const MovieRouter = createRouter()
       const Movie = ctx.prisma.movie;
       const session = ctx.session;
 
-      if (session?.user) {
-        try {
-          // find imdb id string
-          const ImdbIdSearch = await fetch(
-            `https://imdb-api.com/en/API/SearchMovie/k_41l41z8h/${input.title}`
-          );
-          const imdbRes: MovieSearch = await ImdbIdSearch.json();
-          const imdbId = imdbRes.results[0].id;
+      if (!session?.user) {
+        return new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+      }
 
-          // use imdb id to get the rest of the movie's info
-          const options = {
-            method: "GET",
-            headers: {
-              "X-RapidAPI-Key":
-                "bb333b027cmsh807e47c92995a02p1d3f88jsn33ac06947caf",
-              "X-RapidAPI-Host": "movie-database-alternative.p.rapidapi.com",
-            },
-          };
-          const InfoSearch = await fetch(
-            `https://movie-database-alternative.p.rapidapi.com/?r=json&i=${imdbId}`,
-            options
-          );
-          const movieInfo: FullMovieData = await InfoSearch.json();
-          const {
-            Writer,
-            Actors,
-            Country,
-            Awards,
-            Ratings,
-            imdbRating,
-            imdbVotes,
-            Type,
-            DVD,
-            BoxOffice,
-            Production,
-            Website,
-            Response,
-            ...schemaReady
-          } = movieInfo;
+      try {
+        const movieAltDb = "https://movie-database-alternative.p.rapidapi.com";
+        const fetchOptions = {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key":
+              "bb333b027cmsh807e47c92995a02p1d3f88jsn33ac06947caf",
+            "X-RapidAPI-Host": "movie-database-alternative.p.rapidapi.com",
+          },
+        };
 
-          console.log(schemaReady);
-          // upsert new movie with movieInfo
-          const newMovie: Movie & { addedBy: User } = await Movie.upsert({
-            where: { imdbID: schemaReady.imdbID },
-            create: {
-              ...schemaReady,
-              userId: session?.user?.id || "Unknown",
-            },
-            update: {},
-            include: {
-              addedBy: true,
-            },
-          });
+        // find imdb id string
+        const query = encodeURIComponent(input.title.split(" | ")[0] ?? "");
 
-          await pushTrigger("main", "added_to_wishlist", {
-            movie: newMovie,
-          });
-          return newMovie;
-        } catch (err) {
-          if (err) console.error(err);
-        }
+        const ImdbIdSearch = await fetch(
+          new URL(`/?s=${query}&r=json&page=1`, movieAltDb),
+          fetchOptions
+        );
+        const imdbRes: MovieSearch = await ImdbIdSearch.json();
+        const imdbId = imdbRes.Search[0].imdbID;
+
+        // use imdb id to get the rest of the movie's info
+        const InfoSearch = await fetch(
+          `https://movie-database-alternative.p.rapidapi.com/?r=json&i=${imdbId}`,
+          fetchOptions
+        );
+        const movieInfo: FullMovieData = await InfoSearch.json();
+
+        const {
+          Writer,
+          Actors,
+          Country,
+          Awards,
+          Ratings,
+          imdbRating,
+          imdbVotes,
+          Type,
+          DVD,
+          BoxOffice,
+          Production,
+          Website,
+          Response,
+          ...schemaReady
+        } = movieInfo;
+
+        console.log(schemaReady);
+        // upsert new movie with movieInfo
+        const newMovie: Movie & { addedBy: User } = await Movie.upsert({
+          where: { imdbID: schemaReady.imdbID },
+          create: {
+            ...schemaReady,
+            userId: session?.user?.id || "Unknown",
+          },
+          update: {},
+          include: {
+            addedBy: true,
+          },
+        });
+
+        await pushTrigger("main", "added_to_wishlist", {
+          movie: newMovie,
+        });
+        return newMovie;
+      } catch (err) {
+        if (err) console.error(err);
       }
     },
   })
@@ -360,7 +369,7 @@ export const MovieRouter = createRouter()
       }
     },
   })
-  // sets winner and picked movies back to defaul false state
+  // sets winner and picked movies back to default false state
   .mutation("reset", {
     async resolve({ ctx }) {
       const Movies = ctx.prisma.movie;

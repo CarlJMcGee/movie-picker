@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useState, FormEvent, useEffect } from "react";
-import { Session } from "next-auth";
 import { trpc } from "../../utils/trpc";
 
 // bootstrap
@@ -17,7 +16,6 @@ import { Autocomplete } from "@mantine/core";
 import MovieInfoCard from "../MovieInfoCard";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { MovieQuery } from "../../types/imbd-data";
 import Sorter from "../Sorter";
 import { sessionAtom, unavailableAtom } from "../../utils/stateStore";
 import { useAtom } from "jotai";

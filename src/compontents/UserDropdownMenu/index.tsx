@@ -1,22 +1,17 @@
-import { signOut } from "next-auth/react";
 import * as React from "react";
+import { signOut } from "next-auth/react";
 
 // bootstrap
 import Dropdown from "react-bootstrap/Dropdown";
 import Image from "react-bootstrap/Image";
 import { Modal } from "react-bootstrap";
 import { trpc } from "../../utils/trpc";
+import Link from "next/link";
+import { useAtom } from "jotai";
+import { sessionAtom } from "../../utils/stateStore";
 
-export interface IUserDropdownMenuProps {
-  user: string | null | undefined;
-  image: string | null | undefined;
-}
-
-export default function UserDropdownMenu({
-  user,
-  image,
-}: IUserDropdownMenuProps) {
-  image = image ?? "";
+export default function UserDropdownMenu() {
+  const [sess, _setSession] = useAtom(sessionAtom);
 
   const [pass, setPass] = React.useState("");
   const [showAdmin, setShowAdmin] = React.useState(false);
@@ -49,15 +44,20 @@ export default function UserDropdownMenu({
       <Dropdown>
         <Dropdown.Toggle id="userDropdown" className="bg-blue-4 my-5 flex">
           <Image
-            src={image}
+            src={sess?.image ?? ""}
             alt="user pfp"
             thumbnail={false}
             className="w-8 mr-2"
             onDoubleClick={() => setShowAdmin(true)}
           />
-          {user}
+          {sess?.name}
         </Dropdown.Toggle>
         <Dropdown.Menu id="userDropdown" className="bg-blue-3">
+          {sess?.role === "admin" && (
+            <Dropdown.Item>
+              <Link href={"/dbconfig"}>Configure Database</Link>
+            </Dropdown.Item>
+          )}
           <Dropdown.Item onClick={() => signOut()}>Sign Out</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

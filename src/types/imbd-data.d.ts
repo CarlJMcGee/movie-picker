@@ -1,18 +1,17 @@
 import { Movie, User } from "@prisma/client";
 
 export interface MovieSearch {
-  searchType: string;
-  expression: string;
-  results: [
+  Search: [
     {
-      id: string;
-      resultType: string;
-      image: string;
-      title: string;
-      description: string;
+      Title: string;
+      Year: string;
+      imdbID: string;
+      Type: string;
+      Poster: string;
     }
   ];
-  errorMessage: string;
+  totalResults: string;
+  Response: "True";
 }
 
 export interface FullMovieData {

@@ -36,15 +36,15 @@ const Home: NextPage = () => {
 
   //store
   const [session, setSession] = useAtom(sessionAtom);
-  const [unavailable, setUnavailable] = useAtom(unavailableAtom);
-  const [available, setAvailable] = useAtom(availableAtom);
+  const [_unavailable, setUnavailable] = useAtom(unavailableAtom);
+  const [_available, setAvailable] = useAtom(availableAtom);
   const [picked, setPicked] = useAtom(pickedAtom);
   const [winner, setWinner] = useAtom(winnerAtom);
 
   const utils = trpc.useContext();
 
   // queries
-  const { data: sessionRaw } = useSession();
+  const { data: user } = trpc.useQuery(["user.me"]);
   let { isLoading: gettingUnavailable } = trpc.useQuery(
     ["movie.getUnavailable"],
     {
@@ -105,11 +105,11 @@ const Home: NextPage = () => {
   });
 
   useEffect(() => {
-    if (!sessionRaw) {
+    if (!user) {
       return;
     }
-    setSession(sessionRaw);
-  }, [sessionRaw]);
+    setSession(user);
+  }, [user]);
 
   return (
     <div className="bg-blue-1">
@@ -119,7 +119,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="container flex justify-between">
-        <Header session={session} />
+        <Header />
       </header>
       <CoolCatButton />
       {gettingAvailble || gettingUnavailable || gettingPicked ? (
