@@ -1,17 +1,21 @@
 import { NativeSelect, SegmentedControl } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { SortCategories, SortDirections } from "../../types/movies";
-import { MovieQuery } from "../../types/imbd-data";
 import { motion } from "framer-motion";
-import { SetStateAction } from "jotai";
+import { useAtom } from "jotai";
+import { availableAtom, unavailableAtom } from "../../utils/stateStore";
 
 interface SorterProps {
-  movies: MovieQuery[] | undefined;
-  // @ts-expect-error
-  setMovies: SetAtom<[SetStateAction<MovieQuery[]>], void>;
+  col: string;
 }
 
-const Sorter = ({ movies, setMovies }: SorterProps) => {
+const Sorter = ({ col }: SorterProps) => {
+  const [available, setAvailable] = useAtom(availableAtom);
+  const [wishlist, setWishlist] = useAtom(unavailableAtom);
+
+  const movies = col === "available" ? available : wishlist;
+  const setMovies = col === "available" ? setAvailable : setWishlist;
+
   const [sortCat, setSortCat] = useState<SortCategories>("Name");
   const [sortDir, setSortDir] = useState<SortDirections>("Ascending");
 

@@ -11,7 +11,7 @@ import { useAtom } from "jotai";
 export interface IAvailableColProps {}
 
 export default function AvailableCol() {
-  const [movies, setMovies] = useAtom(availableAtom);
+  const [movies] = useAtom(availableAtom);
 
   return (
     <section className="w-11/12 h-4/5 m-3 p-0">
@@ -33,7 +33,7 @@ export default function AvailableCol() {
       >
         Choose Your Movie
       </motion.h3>
-      <Sorter movies={movies} setMovies={setMovies} />
+      <Sorter col="available" />
       <Accordion>
         <AnimatePresence>
           {Array.isArray(movies) &&

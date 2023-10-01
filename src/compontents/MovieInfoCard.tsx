@@ -120,34 +120,32 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
                 className="w-50"
               ></Image>
               {/* unavailable */}
-              {session?.user &&
-                col === "wish-list" &&
-                userData?.role === "admin" && (
-                  <>
-                    <Button
-                      variant="success"
-                      size="sm"
-                      className="bg-green-600"
-                      onClick={() =>
-                        makeAvailable.mutate({ imdbId: movie?.imdbID || "" })
-                      }
-                    >
-                      Add
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="bg-red-600"
-                      onClick={() =>
-                        removeMovie.mutate({ imdbId: movie?.imdbID || "" })
-                      }
-                    >
-                      {removeMovie.isLoading ? "Removing..." : "Delete"}
-                    </Button>
-                  </>
-                )}
+              {session && col === "wish-list" && userData?.role === "admin" && (
+                <>
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="bg-green-600"
+                    onClick={() =>
+                      makeAvailable.mutate({ imdbId: movie?.imdbID || "" })
+                    }
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    className="bg-red-600"
+                    onClick={() =>
+                      removeMovie.mutate({ imdbId: movie?.imdbID || "" })
+                    }
+                  >
+                    {removeMovie.isLoading ? "Removing..." : "Delete"}
+                  </Button>
+                </>
+              )}
               {/* available */}
-              {session?.user && col === "available" && (
+              {session && col === "available" && (
                 <div className="flex flex-col">
                   <Button
                     variant="info"
@@ -172,7 +170,7 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
                 </div>
               )}
               {/* picked */}
-              {session?.user && col === "picked" && (
+              {session && col === "picked" && (
                 <Button
                   variant="danger"
                   size="sm"

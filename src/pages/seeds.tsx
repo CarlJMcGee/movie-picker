@@ -6,12 +6,15 @@ import { trpc } from "../utils/trpc";
 const Seeds: NextPage = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const { data: user } = trpc.useQuery(["user.me"]);
   const usersSeed = trpc.useMutation(["seed.users"]);
 
   const confirmSeed = () => {
     usersSeed.mutate();
     setConfirmOpen(false);
   };
+
+  if (user?.role !== "admin") return <h1>Unauthorized</h1>;
 
   return (
     <>

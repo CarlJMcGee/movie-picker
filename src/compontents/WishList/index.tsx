@@ -80,13 +80,13 @@ export default function WishList() {
         }}
       >
         Wish List{" "}
-        {session?.user && (
+        {session && (
           <Button className="text-blue-2" onClick={() => setAddModal(true)}>
             {addMovie.isLoading ? <Spinner animation="border" /> : "➕"}
           </Button>
         )}{" "}
       </motion.h3>
-      {session?.user && (
+      {session && (
         <>
           <Modal show={showAddModal} onHide={() => setAddModal(false)}>
             <Modal.Header closeButton>
@@ -129,7 +129,7 @@ export default function WishList() {
           </Modal>
         </>
       )}
-      <Sorter movies={movies} setMovies={setMovies} />
+      <Sorter col="wishlist" />
       <Accordion>
         <AnimatePresence>
           {Array.isArray(movies) &&
