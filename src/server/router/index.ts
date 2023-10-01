@@ -2,7 +2,6 @@
 import { createRouter } from "./context";
 import superjson from "superjson";
 
-import { ImdbRouter } from "./imdb";
 import { MovieRouter } from "./Movies";
 import { SeedRouter } from "./seeds";
 import { UserRouter } from "./User";
@@ -11,7 +10,6 @@ import { AiRouter } from "./ai";
 
 export const appRouter = createRouter()
   .transformer(superjson)
-  .merge("imdb.", ImdbRouter)
   .merge("user.", UserRouter)
   .merge("movie.", MovieRouter)
   .merge("seed.", SeedRouter)
