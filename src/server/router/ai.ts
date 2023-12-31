@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from "openai";
+import { OpenAI } from "openai";
 import { createRouter } from "./context";
 import { z } from "zod";
 import { movieRecommendations } from "../../types/movies";
@@ -7,10 +7,11 @@ import { MovieQuery } from "../../types/imbd-data";
 export const AiRouter = createRouter()
   .mutation("cool-cat-quote", {
     async resolve() {
-      const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
-      const openai = new OpenAIApi(aiConfig);
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
       try {
-        const res = await openai.createCompletion({
+        const res = await openai.completions.create({
           model: "text-davinci-003",
           prompt: `You are Cool Cat from the direct to DVD movies Cool Cat Saves the Kids, Cool Cat Kids Superhero, and Cool Cat Fights Corona Virus. Here are a few quotes from Cool Cat:
        "He's about to graffiti our neighbor's wall, and it's not cool to... paint on someone's wall!"
@@ -30,11 +31,11 @@ export const AiRouter = createRouter()
           max_tokens: 350,
         });
 
-        if (!res.data.choices) {
+        if (!res.choices) {
           return undefined;
         }
 
-        return res.data.choices;
+        return res.choices;
       } catch (error) {
         if (error) {
           console.log(error);
@@ -52,10 +53,10 @@ export const AiRouter = createRouter()
         },
       });
 
-      const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
-      const openai = new OpenAIApi(aiConfig);
+      // const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
+      const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
       try {
-        const res = await openai.createCompletion({
+        const res = await openai.completions.create({
           model: "text-davinci-003",
           prompt: `You are Cool Cat from the direct to DVD movies Cool Cat Saves the Kids, Cool Cat Kids Superhero, and Cool Cat Fights Corona Virus. Here are a few quotes from Cool Cat:
        "He's about to graffiti our neighbor's wall, and it's not cool to... paint on someone's wall!"
@@ -79,11 +80,11 @@ export const AiRouter = createRouter()
           max_tokens: 350,
         });
 
-        if (!res.data.choices) {
+        if (!res.choices) {
           return undefined;
         }
 
-        return res.data.choices;
+        return res.choices;
       } catch (error) {
         if (error) {
           console.log(error);
@@ -97,27 +98,26 @@ export const AiRouter = createRouter()
       movie: z.string(),
     }),
     async resolve({ input: { movie } }) {
-      const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
-      const openai = new OpenAIApi(aiConfig);
+      const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
       try {
-        const res = await openai.createCompletion({
+        const res = await openai.completions.create({
           model: "text-davinci-003",
           prompt: `Based on the movie ${movie} what three other similar movies would I like from the same genre?
           Return movies data in the following string format:
-          <original movie title>|<recommended movie title>,<recommended movie title>,<recommended movie title>, etc...`,
+          <original movie title>|<recommended movie title>,<recommended movie title>,<recommended movie title>`,
           temperature: 0.4,
           max_tokens: 350,
           n: 1,
         });
 
-        if (!res.data.choices) {
+        if (!res.choices) {
           return undefined;
         }
-        if (!res.data.choices[0]?.text) {
+        if (!res.choices[0]?.text) {
           return undefined;
         }
 
-        const movieRaw = res.data.choices[0].text.split("|");
+        const movieRaw = res.choices[0].text.split("|");
         const movieRecommendations: movieRecommendations = {
           movie: movieRaw[0]!.trim(),
           recommendations: movieRaw[1]!.split(","),
