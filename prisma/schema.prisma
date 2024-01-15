@@ -2,38 +2,103 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
-    provider = "mysql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.text annotations in model Account below
-    // Further reading: 
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
+model User {
+    id             String    @id @default(cuid())
+    name           String?
+    role           String    @default("user")
+    email          String?   @unique
+    emailVerified  DateTime?
+    image          String?
+    movies         Movie[]
+    playerAccounts Player[]
+    accounts       Account[]
+    sessions       Session[]
+}
+
+// Multiplayer Dice Roller App
+model DiceRoller {
+    id       String    @id @default(cuid())
+    name     String    @unique
+    Players  Player[]
+    Rooms    Room[]
+    DieRolls DieRoll[]
+}
+
+model Player {
+    DBid       String
+    DB         DiceRoller @relation(fields: [DBid], references: [id])
+    id         String     @id @default(cuid())
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    loggedIn   Boolean    @default(false)
+    playerName String
+    charName   String     @unique
+    userId     String?
+    user       User?      @relation(fields: [userId], references: [id])
+    roomId     String
+    room       Room       @relation(fields: [roomId], references: [id])
+    dieRolls   DieRoll[]
+}
+
+model Room {
+    DBid     String
+    DB       DiceRoller @relation(fields: [DBid], references: [id])
+    id       String     @id @default(cuid())
+    name     String     @unique
+    players  Player[]
+    dieRolls DieRoll[]
+}
+
+model DieRoll {
+    DBid     String
+    DB       DiceRoller @relation(fields: [DBid], references: [id])
+    id       String     @id @default(cuid())
+    outcome  String
+    playerId String
+    player   Player     @relation(fields: [playerId], references: [id])
+    roomId   String
+    room     Room       @relation(fields: [roomId], references: [id])
+    created  DateTime   @default(now())
+}
+
+// Movie Picker App
+model MoviePicker {
+    id     String  @id @default(cuid())
+    name   String  @unique
+    Movies Movie[]
+}
+
 model Movie {
-    id        String   @id @default(cuid())
-    Title     String   @db.MediumText
+    DBId      String
+    DB        MoviePicker @relation(fields: [DBId], references: [id], onDelete: Cascade)
+    id        String      @id @default(cuid())
+    Title     String      @db.Text
     Year      String
     Rated     String
     Released  String
     Runtime   String
     Genre     String
-    Director  String   @db.MediumText
-    Plot      String   @db.LongText
+    Director  String      @db.Text
+    Plot      String      @db.Text
     Language  String
     Poster    String
     Metascore String
-    imdbID    String   @unique
-    available Boolean  @default(false)
-    votes     Int      @default(0)
-    winner    Boolean  @default(false)
-    dateAdded DateTime @default(now())
+    imdbID    String      @unique
+    available Boolean     @default(false)
+    votes     Int         @default(0)
+    winner    Boolean     @default(false)
+    dateAdded DateTime    @default(now())
     userId    String
-    addedBy   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    addedBy   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Necessary for Next auth
@@ -61,18 +126,6 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    role          String    @default("user")
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    movies        Movie[]
-    accounts      Account[]
-    sessions      Session[]
 }
 
 model VerificationToken {

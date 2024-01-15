@@ -8,6 +8,7 @@ import {
   User,
   VerificationToken,
 } from "@prisma/client";
+import { raise } from "../../utils";
 
 export const DbRouter = createRouter()
   .mutation("export", {
@@ -48,16 +49,16 @@ export const DbRouter = createRouter()
   })
   .mutation("import", {
     input: z.object({
-      users: z.custom<User>().array(),
-      movies: z.custom<Movie>().array(),
-      account: z.custom<Account>().array(),
-      sessions: z.custom<Session>().array(),
-      verificationTokens: z.custom<VerificationToken>().array(),
+      users: z.custom<User>().array().optional(),
+      movies: z.custom<Movie>().array().optional(),
+      account: z.custom<Account>().array().optional(),
+      sessions: z.custom<Session>().array().optional(),
+      verificationTokens: z.custom<VerificationToken>().array().optional(),
     }),
-    async resolve({ ctx, input }) {
-      const user = await ctx.prisma.user.findUnique({
+    async resolve({ ctx: { DB, session, prisma }, input }) {
+      const user = await DB.users.findUnique({
         where: {
-          id: ctx.session?.user?.id,
+          id: session?.user?.id,
         },
       });
 
@@ -89,7 +90,7 @@ export const DbRouter = createRouter()
 
           async function addUsers(users: User[]) {
             users.forEach(async (user) => {
-              await ctx.prisma.user.upsert({
+              await prisma.user.upsert({
                 where: {
                   email: user.email ?? "",
                 },
@@ -102,20 +103,27 @@ export const DbRouter = createRouter()
           }
 
           async function addMovies(movies: Movie[]) {
+            const user =
+              (await DB.users.findFirst({
+                where: {
+                  email: "ltmcgeemaniii@gmail.com",
+                },
+              })) ?? raise("Failed to find user");
+
             movies.forEach(async (movie) => {
-              await ctx.prisma.movie.upsert({
+              await DB.movies.upsert({
                 where: {
                   id: movie.id,
                 },
-                create: movie,
-                update: {},
+                create: { ...movie, DBId: DB.id },
+                update: { DBId: DB.id },
               });
             });
           }
 
           async function addAccount(account: Account[]) {
             account.forEach(async (acc) => {
-              await ctx.prisma.account.upsert({
+              await prisma.account.upsert({
                 where: {
                   id: acc.id,
                 },
@@ -127,7 +135,7 @@ export const DbRouter = createRouter()
 
           async function addSessions(sessions: Session[]) {
             sessions.forEach(async (session) => {
-              await ctx.prisma.session.upsert({
+              await prisma.session.upsert({
                 where: {
                   id: session.id,
                 },
@@ -141,7 +149,7 @@ export const DbRouter = createRouter()
             verificationTokens: VerificationToken[]
           ) {
             verificationTokens.forEach(async (token) => {
-              await ctx.prisma.verificationToken.upsert({
+              await prisma.verificationToken.upsert({
                 where: {
                   token: token.token,
                 },
