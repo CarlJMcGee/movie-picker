@@ -179,6 +179,7 @@ export const MovieRouter = createRouter()
           where: { imdbID: schemaReady.imdbID },
           create: {
             ...schemaReady,
+            DBId: ctx.DB.id,
             userId: session?.user?.id || "Unknown",
           },
           update: {},
