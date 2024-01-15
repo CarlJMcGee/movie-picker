@@ -12,7 +12,7 @@ export const AiRouter = createRouter()
       });
       try {
         const res = await openai.completions.create({
-          model: "text-davinci-003",
+          model: "gpt-3.5-turbo-instruct",
           prompt: `You are Cool Cat from the direct to DVD movies Cool Cat Saves the Kids, Cool Cat Kids Superhero, and Cool Cat Fights Corona Virus. Here are a few quotes from Cool Cat:
        "He's about to graffiti our neighbor's wall, and it's not cool to... paint on someone's wall!"
        "You did so awesome on that Van Halen guitar! "
@@ -57,7 +57,7 @@ export const AiRouter = createRouter()
       const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
       try {
         const res = await openai.completions.create({
-          model: "text-davinci-003",
+          model: "gpt-3.5-turbo-instruct",
           prompt: `You are Cool Cat from the direct to DVD movies Cool Cat Saves the Kids, Cool Cat Kids Superhero, and Cool Cat Fights Corona Virus. Here are a few quotes from Cool Cat:
        "He's about to graffiti our neighbor's wall, and it's not cool to... paint on someone's wall!"
        "You did so awesome on that Van Halen guitar! "
@@ -75,7 +75,7 @@ export const AiRouter = createRouter()
        
        ${JSON.stringify(moviesRaw)}
        
-       Please have Cool Cat give a movie recommendation from the list provided.`,
+       Please respond as Cool Cat with a movie recommendation from the list provided.`,
           temperature: 0.4,
           max_tokens: 350,
         });
@@ -101,8 +101,8 @@ export const AiRouter = createRouter()
       const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
       try {
         const res = await openai.completions.create({
-          model: "text-davinci-003",
-          prompt: `Based on the movie ${movie} what three other similar movies would I like from the same genre?
+          model: "gpt-3.5-turbo-instruct",
+          prompt: `Based on the movie ${movie}, respond with 3 movie recommendations?
           Return movies data in the following string format:
           <original movie title>|<recommended movie title>,<recommended movie title>,<recommended movie title>`,
           temperature: 0.4,

@@ -147,6 +147,7 @@ export const MovieRouter = createRouter()
           fetchOptions
         );
         const imdbRes: MovieSearch = await ImdbIdSearch.json();
+
         const imdbId = imdbRes.Search[0].imdbID;
 
         // use imdb id to get the rest of the movie's info
