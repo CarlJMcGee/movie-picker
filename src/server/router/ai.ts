@@ -53,7 +53,6 @@ export const AiRouter = createRouter()
         },
       });
 
-      // const aiConfig = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
       const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
       try {
         const res = await openai.completions.create({
@@ -73,7 +72,7 @@ export const AiRouter = createRouter()
        
        Here are a list of movies available: 
        
-       ${JSON.stringify(moviesRaw)}
+       ${JSON.stringify(moviesRaw.map((movie) => movie.Title), null, 2)}
        
        Please respond as Cool Cat with a movie recommendation from the list provided.`,
           temperature: 0.4,
