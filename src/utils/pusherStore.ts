@@ -9,7 +9,8 @@ type channelEvt =
   | "added_vote"
   | "removed_vote"
   | "we_have_a_winner"
-  | "reset";
+  | "reset"
+  | "watched_changed";
 
 type channels = "main";
 

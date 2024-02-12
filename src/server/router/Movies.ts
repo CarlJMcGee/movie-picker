@@ -252,7 +252,7 @@ export const MovieRouter = createRouter()
         });
         await pushTrigger("main", "made_available", makeAvailable);
         return { msg: `${makeAvailable.Title} is now available for streaming` };
-      } catch (err) {}
+      } catch (err) { }
     },
   })
   .mutation("makeUnavailable", {
@@ -281,7 +281,7 @@ export const MovieRouter = createRouter()
         return {
           msg: `${makeUnavailable.Title} is no longer available for streaming`,
         };
-      } catch (err) {}
+      } catch (err) { }
     },
   })
   .mutation("addVote", {
@@ -419,4 +419,29 @@ export const MovieRouter = createRouter()
         if (err) console.error(err);
       }
     },
-  });
+  })
+  .mutation("setWatched", {
+    input: z.object({
+      watched: z.boolean(),
+      id: z.string().trim(),
+    }),
+    async resolve({ input, ctx }) {
+      try {
+        // check user's priviliges
+        const user = await ctx.prisma.user.findUnique({
+          where: { id: ctx.session?.user?.id },
+        });
+        if (user?.role !== "admin") return { msg: `Must be an Admin to perform task` };
+
+        const movie = await ctx.prisma.movie.update({
+          where: { id: input.id },
+          data: { watched: input.watched },
+        });
+
+        await pushTrigger("main", "watched_changed", movie);
+        return { msg: `Watched changed!` };
+      } catch (err) {
+        if (err) console.error(err);
+      }
+    }
+  })

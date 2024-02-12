@@ -97,6 +97,7 @@ model Movie {
     votes     Int         @default(0)
     winner    Boolean     @default(false)
     dateAdded DateTime    @default(now())
+    watched   Boolean     @default(false)
     userId    String
     addedBy   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

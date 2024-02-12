@@ -104,6 +104,10 @@ const Home: NextPage = () => {
     setWinner(null);
   });
 
+  BindEvent("watched_changed", () => {
+    utils.invalidateQueries(["movie.getAvailable"]);
+  });
+
   useEffect(() => {
     if (!user) {
       return;

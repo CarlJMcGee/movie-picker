@@ -35,6 +35,7 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
   const removeMovie = trpc.useMutation(["movie.remove"]);
   const addVote = trpc.useMutation(["movie.addVote"]);
   const removeVote = trpc.useMutation(["movie.removeVote"]);
+  const { mutateAsync: setWatched } = trpc.useMutation(["movie.setWatched"]);
 
   if (!movie) {
     return <h3>Movie Not Found</h3>;
@@ -68,7 +69,10 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
         delay: delayMap.get(col),
       }}
     >
-      <Accordion.Item eventKey={movie?.imdbID || "0"}>
+      <Accordion.Item
+        eventKey={movie?.imdbID || "0"}
+        className={`${movie.watched ? "bg-gray-300" : ""}`}
+      >
         <Accordion.Header>
           {col === "picked" && (
             <Badge bg="primary">Votes: {movie?.votes}</Badge>
@@ -158,14 +162,32 @@ export default function MovieInfoCard({ movie, col }: IMovieCardProps) {
                     Vote
                   </Button>
                   {userData?.role === "admin" && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="bg-red-600 w-50"
-                      onClick={() => makeUnavailable({ imdbId: movie?.imdbID })}
-                    >
-                      Make Unavailable
-                    </Button>
+                    <>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="bg-red-600 w-50"
+                        onClick={() =>
+                          makeUnavailable({ imdbId: movie?.imdbID })
+                        }
+                      >
+                        Make Unavailable
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          setWatched({ id: movie.id, watched: !movie.watched })
+                        }
+                        variant="success"
+                        size="sm"
+                        className={`${
+                          movie.watched
+                            ? "bg-green-200 text-black"
+                            : "bg-green-500 text-white"
+                        } w-50`}
+                      >
+                        {movie.watched ? "Watched" : "Unwatched"}
+                      </Button>
+                    </>
                   )}
                 </div>
               )}
